@@ -1,0 +1,122 @@
+# ============================================
+# FireGuard AI - Hệ thống Kiểm soát Lửa
+# ============================================
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environment
+env/
+venv/
+.venv/
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.local/
+.cache/
+.history/
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Node / npm
+node_modules/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# Web build outputs
+dist/
+**/dist/
+**/build/
+
+# ============================================
+# Android (Gradle build artifacts)
+# ============================================
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/.idea/
+android/captures/
+android/.cxx/
+android/app/release/
+android/key.jks
+android/keystore.properties
+*.apk
+*.aab
+
+# ============================================
+# Project specific - large/regenerable files
+# ============================================
+
+# Training runs (RẤT lớn — model output)
+runs/
+
+# Output (generated at runtime)
+output/
+
+# Temp processing
+dfs_tmp/
+dataset_new_tmp/
+dataset_v2/
+dataset/
+
+# Received images from ESP32 (ảnh test, lớn vài GB)
+received_images/
+src/received_images/
+src/test_results/
+captures/
+test_images/
+
+# Model weights (binary lớn — share qua Drive/HuggingFace)
+models/*.pt
+*.pt
+*.onnx
+*.tflite
+*.engine
+!models/.gitkeep
+
+# CSV logs
+detections.csv
+
+# Sensitive
+.env
+.env.local
+config.local.json
+*.key
+*.pem
+
+# ============================================
+# Old structure / archives
+# ============================================
+code/
+testcam/
+tep_du_lieu/
+
+# Temp files
+*.zip
+*.rar
+*.tar.gz
+*.7z
+video_test.mp4
+1.jpg
+image.jpg
+
+# Logs
+*.log
+logs/

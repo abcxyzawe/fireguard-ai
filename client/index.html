@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>FireGuard AI</title>
+  <script>
+    try {
+      const session = localStorage.getItem('fireguard_session');
+      location.replace(session ? 'dashboard.html' : 'login.html');
+    } catch (e) {
+      location.replace('login.html');
+    }
+  </script>
+</head>
+<body></body>
+</html>

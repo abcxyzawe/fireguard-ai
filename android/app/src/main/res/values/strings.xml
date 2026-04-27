@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FireGuard AI</string>
+    <string name="app_description">Hệ thống phát hiện và báo cháy thông minh</string>
+    <string name="notif_channel_alert">Cảnh báo cháy</string>
+    <string name="notif_channel_service">Dịch vụ nền</string>
+</resources>

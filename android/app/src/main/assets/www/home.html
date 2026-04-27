@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#05070B" />
+  <title>Trang chủ · FireGuard</title>
+  <link rel="icon" type="image/jpeg" href="assets/images/logo.jpg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="stylesheet" href="assets/css/app.css" />
+  <script src="assets/js/app.js"></script>
+  <script>if (!Auth.isLoggedIn()) location.href = 'login.html';</script>
+</head>
+
+<body class="bg-bg-base text-slate-100">
+  <div class="app-container">
+    <!-- Top bar -->
+    <header class="sticky top-0 z-20 safe-top px-5 pt-3 pb-3 flex items-center gap-3 bg-bg-base/80 backdrop-blur-lg">
+      <a href="profile.html" class="tap">
+        <img data-user-avatar src="assets/images/avatar.jpg" alt="" class="w-10 h-10 rounded-xl object-cover ring-1 ring-white/10" />
+      </a>
+      <div class="flex-1 min-w-0">
+        <div class="text-[11px] text-slate-500">Chào buổi sáng</div>
+        <div data-user-name class="text-sm font-bold truncate">Quốc Anh</div>
+      </div>
+      <a href="notifications.html" class="tap relative w-10 h-10 rounded-xl bg-white/5 grid place-items-center">
+        <i class="ph-bold ph-bell text-xl"></i>
+        <span class="absolute top-1.5 right-1.5 min-w-[16px] h-4 rounded-full bg-flame-500 text-[9px] font-bold grid place-items-center px-1">3</span>
+      </a>
+    </header>
+
+    <!-- Scrollable content -->
+    <main class="px-5 pb-32 page">
+      <!-- HERO STATUS CARD -->
+      <div class="relative mt-2 rounded-3xl overflow-hidden fade-up">
+        <div class="absolute inset-0 bg-gradient-to-br from-green-500/20 via-green-700/10 to-transparent"></div>
+        <div class="absolute -top-16 -right-16 w-48 h-48 rounded-full bg-green-500/25 blur-3xl"></div>
+        <div class="relative card bg-transparent border-white/5 p-6">
+          <div class="flex items-center justify-between">
+            <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-green-500/15 border border-green-500/30 backdrop-blur">
+              <span class="relative flex w-1.5 h-1.5">
+                <span class="absolute inset-0 rounded-full bg-green-500 animate-ping opacity-70"></span>
+                <span class="relative w-1.5 h-1.5 rounded-full bg-green-500"></span>
+              </span>
+              <span class="text-[10px] font-bold text-green-400 uppercase tracking-widest">Đang bảo vệ</span>
+            </div>
+            <span class="text-[11px] font-mono text-slate-500">Vừa xong</span>
+          </div>
+          <div class="mt-6">
+            <div class="text-xs text-slate-400">Trạng thái hệ thống</div>
+            <div class="mt-1 font-display text-4xl font-bold">
+              <span class="bg-gradient-to-r from-green-300 to-green-500 bg-clip-text text-transparent">An toàn</span>
+            </div>
+            <p class="mt-2 text-sm text-slate-400">Không phát hiện bất thường trong 24 giờ qua.</p>
+          </div>
+          <div class="mt-5 pt-4 border-t border-white/5 grid grid-cols-3 gap-2">
+            <div>
+              <div class="text-[9px] font-mono text-slate-500 tracking-widest uppercase">Camera</div>
+              <div class="mt-0.5 font-display text-lg font-bold">3<span class="text-slate-600 text-sm">/4</span></div>
+            </div>
+            <div>
+              <div class="text-[9px] font-mono text-slate-500 tracking-widest uppercase">Phát hiện</div>
+              <div class="mt-0.5 font-display text-lg font-bold">0</div>
+            </div>
+            <div>
+              <div class="text-[9px] font-mono text-slate-500 tracking-widest uppercase">Đã chặn</div>
+              <div class="mt-0.5 font-display text-lg font-bold text-flame-400">12</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUICK ACTIONS -->
+      <section class="mt-5 fade-up" style="animation-delay:100ms">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="font-display font-bold text-base">Thao tác nhanh</h2>
+        </div>
+        <div class="grid grid-cols-4 gap-2.5">
+          <button class="tap card p-3 flex flex-col items-center gap-1.5">
+            <div class="w-10 h-10 rounded-xl bg-green-500/15 grid place-items-center">
+              <i class="ph-fill ph-power text-green-400 text-lg"></i>
+            </div>
+            <span class="text-[11px] font-semibold text-center">Bật</span>
+          </button>
+          <button class="tap card p-3 flex flex-col items-center gap-1.5">
+            <div class="w-10 h-10 rounded-xl bg-yellow-500/15 grid place-items-center">
+              <i class="ph-fill ph-bell-slash text-yellow-400 text-lg"></i>
+            </div>
+            <span class="text-[11px] font-semibold text-center">Tắt báo</span>
+          </button>
+          <button class="tap card p-3 flex flex-col items-center gap-1.5">
+            <div class="w-10 h-10 rounded-xl bg-cyan-glow/15 grid place-items-center">
+              <i class="ph-fill ph-drop text-cyan-glow text-lg"></i>
+            </div>
+            <span class="text-[11px] font-semibold text-center">Test bơm</span>
+          </button>
+          <button class="tap card p-3 flex flex-col items-center gap-1.5">
+            <div class="w-10 h-10 rounded-xl bg-flame-500/15 grid place-items-center">
+              <i class="ph-fill ph-arrow-clockwise text-flame-400 text-lg"></i>
+            </div>
+            <span class="text-[11px] font-semibold text-center">Reset</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- CAMERAS GRID -->
+      <section class="mt-6 fade-up" style="animation-delay:200ms">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="font-display font-bold text-base">Camera trực tiếp</h2>
+          <a href="cameras.html" class="text-xs text-flame-400 font-semibold flex items-center gap-1">
+            Xem tất cả <i class="ph-bold ph-arrow-right text-xs"></i>
+          </a>
+        </div>
+        <div id="camGrid" class="grid grid-cols-2 gap-2.5"></div>
+      </section>
+
+      <!-- EVENTS -->
+      <section class="mt-6 fade-up" style="animation-delay:300ms">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="font-display font-bold text-base">Sự kiện gần đây</h2>
+          <a href="events.html" class="text-xs text-flame-400 font-semibold">Xem hết</a>
+        </div>
+        <div id="eventsList" class="card divide-y divide-white/5"></div>
+      </section>
+
+      <!-- DEVICE INFO -->
+      <section class="mt-6 mb-4 fade-up" style="animation-delay:400ms">
+        <div class="card p-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-flame-500/15 grid place-items-center">
+              <i class="ph-fill ph-cpu text-flame-400 text-lg"></i>
+            </div>
+            <div class="flex-1">
+              <div class="text-sm font-bold">Raspberry Pi 4</div>
+              <div class="text-[11px] text-slate-500">Uptime 99.8% · CPU 42% · RAM 2.3/6 GB</div>
+            </div>
+            <i class="ph-bold ph-caret-right text-slate-500"></i>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Bottom tab bar -->
+    <nav class="tab-bar safe-bottom px-5 pt-2 pb-3">
+      <div class="flex items-center justify-around">
+        <a href="home.html" class="tap flex flex-col items-center gap-1 px-3 py-1 text-flame-400">
+          <i class="ph-fill ph-house text-xl"></i>
+          <span class="text-[10px] font-semibold">Trang chủ</span>
+        </a>
+        <a href="cameras.html" class="tap flex flex-col items-center gap-1 px-3 py-1 text-slate-500">
+          <i class="ph-bold ph-video-camera text-xl"></i>
+          <span class="text-[10px] font-semibold">Camera</span>
+        </a>
+        <a href="events.html" class="tap flex flex-col items-center gap-1 px-3 py-1 text-slate-500">
+          <i class="ph-bold ph-clock-counter-clockwise text-xl"></i>
+          <span class="text-[10px] font-semibold">Lịch sử</span>
+        </a>
+        <a href="profile.html" class="tap flex flex-col items-center gap-1 px-3 py-1 text-slate-500">
+          <i class="ph-bold ph-user text-xl"></i>
+          <span class="text-[10px] font-semibold">Tôi</span>
+        </a>
+      </div>
+    </nav>
+  </div>
+
+  <script>
+    // Populate cameras
+    const camGrid = document.getElementById('camGrid');
+    MockData.cameras.forEach((cam, i) => {
+      const online = cam.status === 'online';
+      const wrap = document.createElement('a');
+      wrap.href = `camera-detail.html?id=${cam.id}`;
+      wrap.className = 'tap relative rounded-xl overflow-hidden aspect-video bg-black border border-white/5';
+
+      if (online && cam.img) {
+        const img = document.createElement('img');
+        img.src = cam.img; img.alt = ''; img.loading = 'lazy';
+        img.className = 'w-full h-full object-cover';
+        wrap.appendChild(img);
+      } else {
+        const ph = document.createElement('div');
+        ph.className = 'absolute inset-0 grid place-items-center';
+        const ic = document.createElement('i');
+        ic.className = 'ph ph-wifi-slash text-3xl text-slate-700';
+        ph.appendChild(ic);
+        wrap.appendChild(ph);
+      }
+      const ov = document.createElement('div');
+      ov.className = 'absolute inset-0 bg-gradient-to-t from-black/70 to-transparent';
+      wrap.appendChild(ov);
+
+      const top = document.createElement('div');
+      top.className = 'absolute top-2 left-2 right-2 flex items-center justify-between';
+      const live = document.createElement('div');
+      live.className = 'flex items-center gap-1 px-1.5 py-0.5 rounded bg-black/60 backdrop-blur text-[9px] font-bold';
+      if (online) {
+        const d = document.createElement('span'); d.className = 'w-1 h-1 rounded-full bg-red-500 animate-pulse';
+        const t = document.createElement('span'); t.className = 'text-white'; t.textContent = 'LIVE';
+        live.appendChild(d); live.appendChild(t);
+      } else {
+        const t = document.createElement('span'); t.className = 'text-slate-400'; t.textContent = 'OFF';
+        live.appendChild(t);
+      }
+      top.appendChild(live);
+      const dot = document.createElement('span');
+      dot.className = 'status-dot ' + (online ? 'status-online' : 'status-offline');
+      dot.style.width = '6px'; dot.style.height = '6px';
+      top.appendChild(dot);
+      wrap.appendChild(top);
+
+      const bot = document.createElement('div');
+      bot.className = 'absolute bottom-2 left-2 right-2';
+      const name = document.createElement('div');
+      name.className = 'text-xs font-bold text-white truncate';
+      name.textContent = cam.name;
+      const loc = document.createElement('div');
+      loc.className = 'text-[10px] text-slate-300';
+      loc.textContent = cam.location;
+      bot.appendChild(name); bot.appendChild(loc);
+      wrap.appendChild(bot);
+
+      camGrid.appendChild(wrap);
+    });
+
+    // Populate events
+    const evList = document.getElementById('eventsList');
+    const iconMap = {
+      alert:   { bg: 'bg-red-500/15',      color: 'text-red-400',     icon: 'ph-fire' },
+      warn:    { bg: 'bg-yellow-500/15',   color: 'text-yellow-400',  icon: 'ph-warning' },
+      blocked: { bg: 'bg-purple-500/15',   color: 'text-purple-400',  icon: 'ph-shield-check' },
+      info:    { bg: 'bg-cyan-glow/15',    color: 'text-cyan-glow',   icon: 'ph-info' },
+    };
+    MockData.events.slice(0, 4).forEach(ev => {
+      const m = iconMap[ev.type] || iconMap.info;
+      const row = document.createElement('a');
+      row.href = 'events.html';
+      row.className = 'tap flex items-center gap-3 px-4 py-3 active:bg-white/5';
+      const ic = document.createElement('div');
+      ic.className = `flex-shrink-0 w-9 h-9 rounded-xl ${m.bg} grid place-items-center`;
+      const icEl = document.createElement('i');
+      icEl.className = `ph-fill ${m.icon} ${m.color}`;
+      ic.appendChild(icEl);
+      const b = document.createElement('div');
+      b.className = 'flex-1 min-w-0';
+      const t = document.createElement('div');
+      t.className = 'text-sm font-semibold text-white truncate';
+      t.textContent = ev.title;
+      const meta = document.createElement('div');
+      meta.className = 'text-[11px] text-slate-500 mt-0.5';
+      meta.textContent = ev.time + (ev.cam ? ' · ' + ev.cam.toUpperCase() : '');
+      b.appendChild(t); b.appendChild(meta);
+      const arr = document.createElement('i');
+      arr.className = 'ph-bold ph-caret-right text-slate-600';
+      row.appendChild(ic); row.appendChild(b); row.appendChild(arr);
+      evList.appendChild(row);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Camera · FireGuard AI</title>
+  <link rel="icon" type="image/jpeg" href="assets/images/logo.jpg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="stylesheet" href="assets/css/app.css" />
+  <script src="assets/js/app.js"></script>
+  <script src="assets/js/layout.js"></script>
+  <script>if (!Auth.isLoggedIn()) location.href = 'login.html';</script>
+</head>
+<body data-active="cameras" class="bg-bg-base text-slate-100">
+
+  <main id="pageMain" class="p-5 sm:p-7 lg:p-8 max-w-[1600px]">
+    <!-- Page header -->
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-6 fade-in-up">
+      <div>
+        <h2 class="font-display text-2xl sm:text-3xl font-bold">Camera giám sát</h2>
+        <p class="mt-1 text-slate-400 text-sm">4 camera · 3 online · 1 offline</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <div class="hidden sm:flex items-center gap-1 p-1 rounded-lg bg-bg-card border border-white/5">
+          <button id="gridViewBtn" class="view-btn active px-3 py-1.5 rounded-md text-xs font-semibold flex items-center gap-1.5"><i class="ph-bold ph-squares-four"></i> Lưới</button>
+          <button id="listViewBtn" class="view-btn px-3 py-1.5 rounded-md text-xs font-semibold flex items-center gap-1.5"><i class="ph-bold ph-list"></i> Danh sách</button>
+        </div>
+        <button class="btn-primary px-4 py-2 rounded-lg text-sm flex items-center gap-2">
+          <i class="ph-bold ph-plus"></i>
+          <span class="hidden sm:inline">Thêm camera</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ============ GRID VIEW (default) ============ -->
+    <div id="gridLayout" class="grid xl:grid-cols-[1fr,320px] gap-5">
+      <!-- Main view -->
+      <div class="space-y-4">
+        <!-- Selected camera feed -->
+        <div id="mainFeed" class="relative aspect-video rounded-2xl overflow-hidden bg-black border border-white/10 fade-in-up">
+          <img id="mainImg" src="../website/assets/images/city.jpg" alt="" class="w-full h-full object-cover" />
+          <!-- Gradient -->
+          <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30 pointer-events-none"></div>
+
+          <!-- Detection overlay (fake bbox) -->
+          <div id="detectionBox" class="hidden absolute top-[40%] left-[45%] w-[15%] h-[25%] border-2 border-flame-400 rounded-md shadow-[0_0_0_4px_rgba(240,78,23,0.2)]">
+            <span class="absolute -top-7 left-0 px-2 py-0.5 bg-flame-500 text-white text-[10px] font-bold rounded">FIRE · 96.3%</span>
+          </div>
+
+          <!-- Top HUD -->
+          <div class="absolute top-4 left-4 right-4 flex items-start justify-between">
+            <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-black/60 backdrop-blur-md">
+              <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+              <span class="text-xs font-bold text-white tracking-wider">LIVE</span>
+              <span class="mx-1 text-slate-500">·</span>
+              <span id="mainCamName" class="text-xs text-slate-300">Phòng khách</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button class="w-9 h-9 rounded-lg bg-black/60 backdrop-blur-md hover:bg-black/80 transition grid place-items-center">
+                <i class="ph-bold ph-camera text-white"></i>
+              </button>
+              <button class="w-9 h-9 rounded-lg bg-black/60 backdrop-blur-md hover:bg-black/80 transition grid place-items-center">
+                <i class="ph-bold ph-gear-six text-white"></i>
+              </button>
+              <button class="w-9 h-9 rounded-lg bg-black/60 backdrop-blur-md hover:bg-black/80 transition grid place-items-center">
+                <i class="ph-bold ph-corners-out text-white"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Bottom HUD -->
+          <div class="absolute bottom-4 left-4 right-4 flex items-end justify-between gap-3">
+            <div class="space-y-1">
+              <div id="mainCamLoc" class="text-sm font-bold text-white">Tầng 1 · Cam 1</div>
+              <div class="flex items-center gap-3 text-[11px] font-mono text-slate-300">
+                <span>800×600 · 15 FPS</span>
+                <span class="w-1 h-1 rounded-full bg-slate-600"></span>
+                <span>ESP32-CAM</span>
+              </div>
+            </div>
+            <button id="toggleBoxBtn" class="px-3 py-1.5 rounded-lg bg-flame-500/90 hover:bg-flame-500 text-white text-xs font-semibold transition flex items-center gap-1.5">
+              <i class="ph-fill ph-target"></i>
+              Hiện bounding box
+            </button>
+          </div>
+        </div>
+
+        <!-- Live detection stats -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div class="p-4 rounded-xl bg-bg-card border border-white/5">
+            <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Confidence</div>
+            <div class="mt-1 font-mono text-xl font-bold text-flame-400">96.3<span class="text-base">%</span></div>
+            <div class="h-1 rounded-full bg-white/5 mt-2 overflow-hidden">
+              <div class="h-full bg-flame-400 rounded-full" style="width:96%"></div>
+            </div>
+          </div>
+          <div class="p-4 rounded-xl bg-bg-card border border-white/5">
+            <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Verify Score</div>
+            <div class="mt-1 font-mono text-xl font-bold text-cyan-glow">72.1<span class="text-base">%</span></div>
+            <div class="h-1 rounded-full bg-white/5 mt-2 overflow-hidden">
+              <div class="h-full bg-cyan-glow rounded-full" style="width:72%"></div>
+            </div>
+          </div>
+          <div class="p-4 rounded-xl bg-bg-card border border-white/5">
+            <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Servo Pan</div>
+            <div class="mt-1 font-mono text-xl font-bold text-purple-400">42<span class="text-base">°</span></div>
+            <div class="text-[10px] text-slate-500 mt-1.5">Tilt: 18° (bù trọng lực)</div>
+          </div>
+          <div class="p-4 rounded-xl bg-bg-card border border-white/5">
+            <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Chế độ</div>
+            <div class="mt-1 font-display text-lg font-bold text-green-400">Sensitive</div>
+            <div class="text-[10px] text-slate-500 mt-1.5">Ngưỡng: 0.28</div>
+          </div>
+        </div>
+
+        <!-- Servo controls -->
+        <div class="p-5 rounded-2xl bg-bg-card border border-white/5">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-display font-bold text-sm">Điều khiển vòi phun thủ công</h3>
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-400 font-semibold">CẢNH BÁO</span>
+          </div>
+          <div class="grid grid-cols-3 gap-3 max-w-sm mx-auto">
+            <div></div>
+            <button class="py-3 rounded-xl bg-white/5 hover:bg-flame-500/15 transition"><i class="ph-bold ph-arrow-up text-xl"></i></button>
+            <div></div>
+            <button class="py-3 rounded-xl bg-white/5 hover:bg-flame-500/15 transition"><i class="ph-bold ph-arrow-left text-xl"></i></button>
+            <button class="py-3 rounded-xl bg-flame-500 hover:bg-flame-600 transition text-white font-bold"><i class="ph-fill ph-drop text-xl"></i></button>
+            <button class="py-3 rounded-xl bg-white/5 hover:bg-flame-500/15 transition"><i class="ph-bold ph-arrow-right text-xl"></i></button>
+            <div></div>
+            <button class="py-3 rounded-xl bg-white/5 hover:bg-flame-500/15 transition"><i class="ph-bold ph-arrow-down text-xl"></i></button>
+            <div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Thumbnails list -->
+      <aside class="space-y-3">
+        <div class="text-xs font-bold text-slate-500 tracking-widest uppercase px-1">Tất cả camera</div>
+        <div id="camList" class="space-y-3"></div>
+      </aside>
+    </div>
+
+    <!-- ============ LIST VIEW (alternative) ============ -->
+    <div id="listLayout" class="hidden space-y-3">
+      <div id="camListFull" class="space-y-3"></div>
+    </div>
+  </main>
+
+  <script>
+    Auth.requireAuth();
+    FG.renderShell({ pageTitle: 'Camera', breadcrumb: 'Giám sát' });
+
+    const camList = document.getElementById('camList');
+    const mainImg = document.getElementById('mainImg');
+    const mainCamName = document.getElementById('mainCamName');
+    const mainCamLoc = document.getElementById('mainCamLoc');
+    const detectionBox = document.getElementById('detectionBox');
+    const toggleBoxBtn = document.getElementById('toggleBoxBtn');
+
+    const IMG_FOR = {
+      cam1: '../website/assets/images/city.jpg',
+      cam2: '../website/assets/images/fire_small.jpg',
+      cam3: 'assets/images/login_art.jpg',
+      cam4: null, // offline
+    };
+
+    function selectCam(cam) {
+      mainCamName.textContent = cam.name;
+      mainCamLoc.textContent = `${cam.location} · ${cam.id.toUpperCase()}`;
+      const src = IMG_FOR[cam.id];
+      if (src) {
+        mainImg.src = src;
+        mainImg.style.display = '';
+      } else {
+        mainImg.style.display = 'none';
+      }
+      // highlight selected card
+      Array.from(camList.children).forEach(c => c.dataset.selected = 'false');
+      const el = camList.querySelector(`[data-cam="${cam.id}"]`);
+      if (el) el.dataset.selected = 'true';
+    }
+
+    function buildCamItem(cam) {
+      const wrap = document.createElement('button');
+      wrap.dataset.cam = cam.id;
+      wrap.className = 'group w-full rounded-xl overflow-hidden bg-bg-card border border-white/5 hover:border-flame-400/40 transition text-left';
+      wrap.setAttribute('data-selected', cam.id === 'cam1' ? 'true' : 'false');
+      wrap.addEventListener('click', () => selectCam(cam));
+
+      // Image
+      const imgWrap = document.createElement('div');
+      imgWrap.className = 'relative aspect-video bg-black overflow-hidden';
+      if (cam.status === 'online' && IMG_FOR[cam.id]) {
+        const img = document.createElement('img');
+        img.src = IMG_FOR[cam.id];
+        img.alt = '';
+        img.loading = 'lazy';
+        img.className = 'w-full h-full object-cover opacity-90 group-hover:opacity-100 transition';
+        imgWrap.appendChild(img);
+      } else {
+        const ph = document.createElement('div');
+        ph.className = 'absolute inset-0 bg-bg-soft grid place-items-center';
+        const ic = document.createElement('i');
+        ic.className = 'ph ph-wifi-slash text-3xl text-slate-700';
+        ph.appendChild(ic);
+        imgWrap.appendChild(ph);
+      }
+      // Top badge
+      const topBadge = document.createElement('div');
+      topBadge.className = 'absolute top-2 left-2 flex items-center gap-1 px-1.5 py-0.5 rounded bg-black/60 backdrop-blur-sm text-[9px] font-bold';
+      if (cam.status === 'online') {
+        const dot = document.createElement('span');
+        dot.className = 'w-1 h-1 rounded-full bg-red-500 animate-pulse';
+        const txt = document.createElement('span');
+        txt.className = 'text-white';
+        txt.textContent = 'LIVE';
+        topBadge.appendChild(dot); topBadge.appendChild(txt);
+      } else {
+        const txt = document.createElement('span');
+        txt.className = 'text-slate-400';
+        txt.textContent = 'OFF';
+        topBadge.appendChild(txt);
+      }
+      imgWrap.appendChild(topBadge);
+      wrap.appendChild(imgWrap);
+
+      // Info
+      const info = document.createElement('div');
+      info.className = 'p-3';
+      const row1 = document.createElement('div');
+      row1.className = 'flex items-center justify-between';
+      const name = document.createElement('div');
+      name.className = 'text-sm font-bold text-white truncate';
+      name.textContent = cam.name;
+      const dot = document.createElement('span');
+      dot.className = `status-dot ${cam.status === 'online' ? 'status-online' : 'status-offline'}`;
+      row1.appendChild(name); row1.appendChild(dot);
+      const loc = document.createElement('div');
+      loc.className = 'text-[10px] text-slate-500 mt-0.5';
+      loc.textContent = `${cam.location} · ${cam.status === 'online' ? cam.fps + ' FPS' : cam.lastSeen}`;
+      info.appendChild(row1); info.appendChild(loc);
+      wrap.appendChild(info);
+      return wrap;
+    }
+
+    MockData.cameras.forEach(cam => camList.appendChild(buildCamItem(cam)));
+
+    // Deep-link: ?select=camX
+    const urlSel = new URLSearchParams(location.search).get('select');
+    const initCam = urlSel ? MockData.cameras.find(c => c.id === urlSel) : MockData.cameras[0];
+    if (initCam) selectCam(initCam);
+
+    // Toggle bbox
+    let showBox = false;
+    toggleBoxBtn.addEventListener('click', () => {
+      showBox = !showBox;
+      detectionBox.classList.toggle('hidden', !showBox);
+      toggleBoxBtn.querySelector('i').className = showBox ? 'ph-fill ph-eye-slash' : 'ph-fill ph-target';
+    });
+
+    // ============ VIEW MODE TOGGLE ============
+    const gridLayout = document.getElementById('gridLayout');
+    const listLayout = document.getElementById('listLayout');
+    const camListFull = document.getElementById('camListFull');
+    const gridBtn = document.getElementById('gridViewBtn');
+    const listBtn = document.getElementById('listViewBtn');
+
+    // Build list-view row (detailed horizontal card)
+    function buildListRow(cam) {
+      const online = cam.status === 'online';
+      const row = document.createElement('div');
+      row.className = 'group flex flex-col sm:flex-row gap-4 p-4 rounded-2xl bg-bg-card border border-white/5 hover:border-flame-400/30 transition';
+
+      // Left: thumbnail
+      const thumbWrap = document.createElement('div');
+      thumbWrap.className = 'relative w-full sm:w-72 aspect-video rounded-xl overflow-hidden bg-black flex-shrink-0';
+      if (online && IMG_FOR[cam.id]) {
+        const img = document.createElement('img');
+        img.src = IMG_FOR[cam.id]; img.alt = ''; img.loading = 'lazy';
+        img.className = 'w-full h-full object-cover opacity-90 group-hover:opacity-100 transition group-hover:scale-105 duration-500';
+        thumbWrap.appendChild(img);
+      } else {
+        const ph = document.createElement('div');
+        ph.className = 'absolute inset-0 bg-bg-soft grid place-items-center';
+        const ic = document.createElement('i');
+        ic.className = 'ph ph-wifi-slash text-4xl text-slate-700';
+        ph.appendChild(ic);
+        thumbWrap.appendChild(ph);
+      }
+      const gradient = document.createElement('div');
+      gradient.className = 'absolute inset-0 bg-gradient-to-t from-black/60 to-transparent';
+      thumbWrap.appendChild(gradient);
+      const liveBadge = document.createElement('div');
+      liveBadge.className = 'absolute top-2 left-2 flex items-center gap-1 px-1.5 py-0.5 rounded bg-black/60 backdrop-blur-sm text-[10px] font-bold';
+      if (online) {
+        const d = document.createElement('span'); d.className = 'w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse';
+        const t = document.createElement('span'); t.className = 'text-white'; t.textContent = 'LIVE';
+        liveBadge.appendChild(d); liveBadge.appendChild(t);
+      } else {
+        const t = document.createElement('span'); t.className = 'text-slate-400'; t.textContent = 'OFFLINE';
+        liveBadge.appendChild(t);
+      }
+      thumbWrap.appendChild(liveBadge);
+      row.appendChild(thumbWrap);
+
+      // Right: info
+      const info = document.createElement('div');
+      info.className = 'flex-1 min-w-0 flex flex-col justify-between gap-3';
+
+      // Top: name + status
+      const topRow = document.createElement('div');
+      topRow.className = 'flex items-start justify-between gap-3';
+      const titleWrap = document.createElement('div');
+      titleWrap.className = 'min-w-0';
+      const name = document.createElement('div');
+      name.className = 'font-display text-base sm:text-lg font-bold text-white';
+      name.textContent = cam.name;
+      titleWrap.appendChild(name);
+      const meta = document.createElement('div');
+      meta.className = 'mt-0.5 text-xs text-slate-400';
+      meta.textContent = `${cam.location} · ${cam.id.toUpperCase()}`;
+      titleWrap.appendChild(meta);
+      topRow.appendChild(titleWrap);
+
+      const statusPill = document.createElement('div');
+      const pillCls = online ? 'bg-green-500/15 text-green-400' : 'bg-red-500/15 text-red-400';
+      statusPill.className = `flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${pillCls}`;
+      const dot = document.createElement('span');
+      dot.className = `status-dot ${online ? 'status-online' : 'status-offline'}`;
+      dot.style.width = '6px'; dot.style.height = '6px';
+      statusPill.appendChild(dot);
+      statusPill.appendChild(document.createTextNode(online ? 'Online' : 'Offline'));
+      topRow.appendChild(statusPill);
+      info.appendChild(topRow);
+
+      // Middle: mini stats
+      const stats = document.createElement('div');
+      stats.className = 'grid grid-cols-3 gap-2 sm:gap-3';
+      const mkStat = (label, value, color) => {
+        const s = document.createElement('div');
+        s.className = 'p-2 rounded-lg bg-white/[0.03]';
+        const l = document.createElement('div');
+        l.className = 'text-[9px] font-bold text-slate-500 uppercase tracking-wider';
+        l.textContent = label;
+        const v = document.createElement('div');
+        v.className = `mt-0.5 font-mono text-xs font-bold ${color}`;
+        v.textContent = value;
+        s.appendChild(l); s.appendChild(v);
+        return s;
+      };
+      stats.appendChild(mkStat('Độ phân giải', cam.resolution, 'text-slate-200'));
+      stats.appendChild(mkStat('FPS', online ? cam.fps : '—', online ? 'text-cyan-glow' : 'text-slate-600'));
+      stats.appendChild(mkStat('Cập nhật', cam.lastSeen, 'text-slate-200'));
+      info.appendChild(stats);
+
+      // Bottom: actions
+      const actions = document.createElement('div');
+      actions.className = 'flex items-center gap-2 flex-wrap';
+      const viewBtn = document.createElement('button');
+      viewBtn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-flame-500/15 hover:bg-flame-500/25 text-flame-300 text-xs font-semibold transition';
+      const vi = document.createElement('i'); vi.className = 'ph-bold ph-play';
+      const vt = document.createElement('span'); vt.textContent = 'Xem trực tiếp';
+      viewBtn.appendChild(vi); viewBtn.appendChild(vt);
+      viewBtn.addEventListener('click', () => { setView('grid'); selectCam(cam); });
+      actions.appendChild(viewBtn);
+
+      const shotBtn = document.createElement('button');
+      shotBtn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-semibold transition';
+      const si = document.createElement('i'); si.className = 'ph-bold ph-camera';
+      const st = document.createElement('span'); st.textContent = 'Chụp';
+      shotBtn.appendChild(si); shotBtn.appendChild(st);
+      actions.appendChild(shotBtn);
+
+      const configBtn = document.createElement('button');
+      configBtn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-semibold transition';
+      const ci = document.createElement('i'); ci.className = 'ph-bold ph-gear-six';
+      const ct = document.createElement('span'); ct.textContent = 'Cấu hình';
+      configBtn.appendChild(ci); configBtn.appendChild(ct);
+      actions.appendChild(configBtn);
+
+      info.appendChild(actions);
+      row.appendChild(info);
+      return row;
+    }
+
+    // Populate list view once
+    MockData.cameras.forEach(cam => camListFull.appendChild(buildListRow(cam)));
+
+    function setView(mode) {
+      if (mode === 'grid') {
+        gridLayout.classList.remove('hidden');
+        listLayout.classList.add('hidden');
+        gridBtn.classList.add('active');
+        listBtn.classList.remove('active');
+      } else {
+        gridLayout.classList.add('hidden');
+        listLayout.classList.remove('hidden');
+        gridBtn.classList.remove('active');
+        listBtn.classList.add('active');
+      }
+      try { localStorage.setItem('cam_view', mode); } catch (_) {}
+    }
+    gridBtn.addEventListener('click', () => setView('grid'));
+    listBtn.addEventListener('click', () => setView('list'));
+
+    // Restore last view
+    try {
+      const saved = localStorage.getItem('cam_view');
+      if (saved === 'list') setView('list');
+    } catch (_) {}
+
+    // View-btn style
+    const style = document.createElement('style');
+    style.textContent = `
+      [data-selected="true"] { border-color: rgba(240, 78, 23, 0.5) !important; box-shadow: 0 0 0 1px rgba(240, 78, 23, 0.3); }
+      .view-btn { background: transparent; color: #94A3B8; transition: all 0.15s; }
+      .view-btn:hover { color: #E2E8F0; }
+      .view-btn.active { background: rgba(240, 78, 23, 0.15); color: #FF9B66; box-shadow: 0 2px 6px -2px rgba(240,78,23,0.3); }
+    `;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>

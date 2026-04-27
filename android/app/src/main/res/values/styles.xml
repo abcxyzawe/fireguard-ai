@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Main app theme: dark, no ActionBar, edge-to-edge -->
+    <style name="AppTheme" parent="Theme.MaterialComponents.NoActionBar">
+        <item name="colorPrimary">@color/flame_500</item>
+        <item name="colorPrimaryDark">@color/bg_base</item>
+        <item name="colorAccent">@color/flame_500</item>
+        <item name="colorSecondary">@color/flame_400</item>
+
+        <item name="android:windowBackground">@color/bg_base</item>
+        <item name="android:statusBarColor">@color/bg_base</item>
+        <item name="android:navigationBarColor">@color/bg_base</item>
+        <item name="android:windowLightStatusBar">false</item>
+
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
+        <item name="android:colorBackground">@color/bg_base</item>
+    </style>
+
+    <!-- Settings theme keeps ActionBar (with back arrow) -->
+    <style name="AppTheme.Settings" parent="Theme.MaterialComponents">
+        <item name="colorPrimary">@color/bg_soft</item>
+        <item name="colorPrimaryDark">@color/bg_base</item>
+        <item name="colorAccent">@color/flame_500</item>
+        <item name="android:windowBackground">@color/bg_base</item>
+        <item name="android:statusBarColor">@color/bg_base</item>
+        <item name="actionBarStyle">@style/AppTheme.ActionBar</item>
+    </style>
+
+    <style name="AppTheme.ActionBar" parent="Widget.MaterialComponents.ActionBar.Surface">
+        <item name="background">@color/bg_soft</item>
+        <item name="titleTextStyle">@style/AppTheme.ActionBar.Title</item>
+    </style>
+
+    <style name="AppTheme.ActionBar.Title" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+</resources>

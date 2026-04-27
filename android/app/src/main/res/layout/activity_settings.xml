@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#05070B"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <!-- Mode selection -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CHẾ ĐỘ HIỂN THỊ"
+            android:textColor="#64748B"
+            android:textSize="11sp"
+            android:letterSpacing="0.18"
+            android:fontFamily="monospace"
+            android:layout_marginBottom="10dp" />
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            app:cardBackgroundColor="#12161F"
+            app:cardCornerRadius="14dp"
+            app:cardElevation="0dp"
+            xmlns:app="http://schemas.android.com/apk/res-auto">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="16dp"
+                android:gravity="center_vertical">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Offline / Bundled app"
+                        android:textColor="#F1F5F9"
+                        android:textStyle="bold"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Dùng giao diện có sẵn trong app"
+                        android:textColor="#64748B"
+                        android:textSize="12sp"
+                        android:layout_marginTop="2dp" />
+                </LinearLayout>
+
+                <Switch
+                    android:id="@+id/swUseLocal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:thumbTint="#F04E17"
+                    android:trackTint="#1A1F2B" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:id="@+id/tvStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:textSize="12sp"
+            android:layout_marginBottom="24dp" />
+
+        <!-- Server config -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CẤU HÌNH SERVER"
+            android:textColor="#64748B"
+            android:textSize="11sp"
+            android:letterSpacing="0.18"
+            android:fontFamily="monospace"
+            android:layout_marginBottom="10dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Địa chỉ IP"
+            android:textColor="#94A3B8"
+            android:textSize="13sp"
+            android:layout_marginBottom="6dp" />
+
+        <EditText
+            android:id="@+id/etServerIp"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:hint="192.168.1.100"
+            android:inputType="text"
+            android:textColor="#F1F5F9"
+            android:textColorHint="#475569"
+            android:background="@drawable/edit_text_bg"
+            android:paddingHorizontal="16dp"
+            android:textSize="15sp"
+            android:layout_marginBottom="14dp"
+            android:fontFamily="monospace" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Port"
+            android:textColor="#94A3B8"
+            android:textSize="13sp"
+            android:layout_marginBottom="6dp" />
+
+        <EditText
+            android:id="@+id/etServerPort"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:hint="5000"
+            android:inputType="number"
+            android:textColor="#F1F5F9"
+            android:textColorHint="#475569"
+            android:background="@drawable/edit_text_bg"
+            android:paddingHorizontal="16dp"
+            android:textSize="15sp"
+            android:layout_marginBottom="20dp"
+            android:fontFamily="monospace" />
+
+        <Button
+            android:id="@+id/btnTest"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:text="Kiểm tra kết nối"
+            android:textColor="#F1F5F9"
+            android:backgroundTint="#12161F"
+            android:layout_marginBottom="10dp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btnSave"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:text="Lưu và quay lại"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#F04E17"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:background="@drawable/edit_text_bg"
+            android:text="💡 Mẹo: Điện thoại và server (Raspberry Pi / PC) phải cùng mạng WiFi hoặc laptop phát hotspot. Tìm IP bằng lệnh ipconfig (Windows) hoặc ifconfig (Linux/Mac)."
+            android:textColor="#64748B"
+            android:textSize="12sp"
+            android:lineSpacingExtra="4dp"
+            android:layout_marginTop="24dp" />
+
+    </LinearLayout>
+</ScrollView>

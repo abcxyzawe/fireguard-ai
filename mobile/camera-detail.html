@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#05070B" />
+  <title>Camera · FireGuard</title>
+  <link rel="icon" type="image/jpeg" href="assets/images/logo.jpg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="stylesheet" href="assets/css/app.css" />
+  <script src="assets/js/app.js"></script>
+  <script>if (!Auth.isLoggedIn()) location.href = 'login.html';</script>
+</head>
+
+<body class="bg-bg-base text-slate-100">
+  <div class="app-container">
+
+    <!-- Fullscreen video area -->
+    <div class="relative w-full aspect-[4/5] bg-black overflow-hidden">
+      <img id="feedImg" src="assets/images/cam_living.jpg" alt="" class="absolute inset-0 w-full h-full object-cover" />
+      <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/60"></div>
+
+      <!-- Top bar overlay -->
+      <div class="absolute top-0 inset-x-0 safe-top px-4 pt-3 flex items-center justify-between">
+        <a href="cameras.html" class="tap w-10 h-10 rounded-xl bg-black/60 backdrop-blur grid place-items-center">
+          <i class="ph-bold ph-arrow-left text-xl"></i>
+        </a>
+        <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-black/60 backdrop-blur">
+          <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
+          <span class="text-xs font-bold text-white">LIVE</span>
+          <span class="text-slate-500">·</span>
+          <span id="camTitle" class="text-xs text-slate-300">Phòng khách</span>
+        </div>
+        <button class="tap w-10 h-10 rounded-xl bg-black/60 backdrop-blur grid place-items-center" aria-label="Cài đặt">
+          <i class="ph-bold ph-dots-three-vertical text-xl"></i>
+        </button>
+      </div>
+
+      <!-- Crosshair -->
+      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 border border-cyan-glow/50 rounded-full pointer-events-none">
+        <div class="absolute top-1/2 left-0 right-0 border-t border-cyan-glow/40"></div>
+        <div class="absolute left-1/2 top-0 bottom-0 border-l border-cyan-glow/40"></div>
+      </div>
+
+      <!-- Bottom quick info -->
+      <div class="absolute bottom-4 inset-x-4 flex items-center justify-between">
+        <div class="px-3 py-1.5 rounded-xl bg-black/60 backdrop-blur text-[11px] font-mono">
+          <span class="text-slate-400">800×600</span>
+          <span class="mx-2 text-slate-600">·</span>
+          <span class="text-white">15 FPS</span>
+        </div>
+        <div class="px-3 py-1.5 rounded-xl bg-black/60 backdrop-blur text-[11px] font-mono">
+          <span class="text-slate-400">Độ trễ</span>
+          <span class="ml-2 text-cyan-glow">42ms</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content below -->
+    <main class="p-5 pb-32 -mt-6 relative rounded-t-3xl bg-bg-base">
+      <!-- Title -->
+      <div class="mb-5 fade-up">
+        <div class="text-[11px] font-mono text-slate-500 uppercase tracking-widest">Giám sát</div>
+        <h1 id="camName" class="mt-1 font-display text-2xl font-bold">Phòng khách</h1>
+        <p id="camLoc" class="text-sm text-slate-400 mt-0.5">Tầng 1 · CAM1</p>
+      </div>
+
+      <!-- Live stats -->
+      <div class="grid grid-cols-2 gap-2.5 mb-5 fade-up" style="animation-delay:100ms">
+        <div class="card p-3.5">
+          <div class="text-[10px] font-mono text-slate-500 tracking-widest uppercase">Confidence</div>
+          <div class="mt-1 font-display text-xl font-bold text-flame-400">96.3<span class="text-base">%</span></div>
+          <div class="h-1 rounded-full bg-white/5 mt-2 overflow-hidden">
+            <div class="h-full bg-flame-400 rounded-full" style="width:96%"></div>
+          </div>
+        </div>
+        <div class="card p-3.5">
+          <div class="text-[10px] font-mono text-slate-500 tracking-widest uppercase">Verify</div>
+          <div class="mt-1 font-display text-xl font-bold text-cyan-glow">72.1<span class="text-base">%</span></div>
+          <div class="h-1 rounded-full bg-white/5 mt-2 overflow-hidden">
+            <div class="h-full bg-cyan-glow rounded-full" style="width:72%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detection box toggle -->
+      <button class="tap btn-secondary w-full mb-3 flex items-center justify-center gap-2 fade-up" style="animation-delay:150ms">
+        <i class="ph-fill ph-target text-flame-400"></i>
+        Hiện khung phát hiện
+      </button>
+
+      <!-- SERVO D-PAD -->
+      <section class="mb-5 fade-up" style="animation-delay:200ms">
+        <div class="card p-5">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <div class="text-[10px] font-mono text-slate-500 uppercase tracking-widest">Điều khiển thủ công</div>
+              <div class="text-sm font-bold mt-0.5">Vòi phun · 2 trục</div>
+            </div>
+            <span class="text-[10px] px-2 py-1 rounded-full bg-yellow-500/15 text-yellow-400 font-bold uppercase tracking-widest">Chú ý</span>
+          </div>
+          <!-- D-pad -->
+          <div class="grid grid-cols-3 gap-2 max-w-[220px] mx-auto">
+            <div></div>
+            <button class="tap aspect-square rounded-xl bg-white/5 grid place-items-center active:bg-flame-500/15"><i class="ph-bold ph-arrow-up text-xl"></i></button>
+            <div></div>
+            <button class="tap aspect-square rounded-xl bg-white/5 grid place-items-center active:bg-flame-500/15"><i class="ph-bold ph-arrow-left text-xl"></i></button>
+            <button class="tap aspect-square rounded-xl bg-gradient-to-br from-flame-500 to-flame-600 grid place-items-center text-white font-bold active:opacity-80">
+              <i class="ph-fill ph-drop text-xl"></i>
+            </button>
+            <button class="tap aspect-square rounded-xl bg-white/5 grid place-items-center active:bg-flame-500/15"><i class="ph-bold ph-arrow-right text-xl"></i></button>
+            <div></div>
+            <button class="tap aspect-square rounded-xl bg-white/5 grid place-items-center active:bg-flame-500/15"><i class="ph-bold ph-arrow-down text-xl"></i></button>
+            <div></div>
+          </div>
+
+          <div class="mt-4 flex items-center justify-center gap-4 text-[11px] font-mono">
+            <div>Pan: <span class="text-white font-bold">42°</span></div>
+            <div class="w-px h-3 bg-white/10"></div>
+            <div>Tilt: <span class="text-white font-bold">18°</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Extra actions -->
+      <div class="grid grid-cols-3 gap-2.5 fade-up" style="animation-delay:250ms">
+        <button class="tap card p-3 flex flex-col items-center gap-1.5">
+          <i class="ph-fill ph-camera text-flame-400 text-xl"></i>
+          <span class="text-[11px] font-semibold">Chụp ảnh</span>
+        </button>
+        <button class="tap card p-3 flex flex-col items-center gap-1.5">
+          <i class="ph-fill ph-record text-red-400 text-xl"></i>
+          <span class="text-[11px] font-semibold">Quay video</span>
+        </button>
+        <button class="tap card p-3 flex flex-col items-center gap-1.5">
+          <i class="ph-fill ph-corners-out text-cyan-glow text-xl"></i>
+          <span class="text-[11px] font-semibold">Toàn màn hình</span>
+        </button>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Load from query
+    const id = new URLSearchParams(location.search).get('id') || 'cam1';
+    const cam = MockData.cameras.find(c => c.id === id) || MockData.cameras[0];
+    document.getElementById('camName').textContent = cam.name;
+    document.getElementById('camLoc').textContent = `${cam.location} · ${cam.id.toUpperCase()}`;
+    document.getElementById('camTitle').textContent = cam.name;
+    if (cam.img) document.getElementById('feedImg').src = cam.img;
+  </script>
+</body>
+</html>

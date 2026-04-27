@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#05070B" />
+  <title>Lịch sử · FireGuard</title>
+  <link rel="icon" type="image/jpeg" href="assets/images/logo.jpg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="stylesheet" href="assets/css/app.css" />
+  <script src="assets/js/app.js"></script>
+  <script>if (!Auth.isLoggedIn()) location.href = 'login.html';</script>
+</head>
+
+<body class="bg-bg-base text-slate-100">
+  <div class="app-container">
+    <header class="sticky top-0 z-20 safe-top px-5 pt-3 pb-4 bg-bg-base/80 backdrop-blur-lg">
+      <div class="flex items-center justify-between mb-3">
+        <h1 class="font-display text-2xl font-bold">Lịch sử</h1>
+        <button class="tap w-10 h-10 rounded-xl bg-white/5 grid place-items-center" aria-label="Lọc">
+          <i class="ph-bold ph-funnel text-xl"></i>
+        </button>
+      </div>
+      <!-- Filter pills -->
+      <div class="flex items-center gap-2 overflow-x-auto scroll-hidden -mx-5 px-5">
+        <button class="fpill active flex-shrink-0">Tất cả</button>
+        <button class="fpill flex-shrink-0">🔥 Cháy</button>
+        <button class="fpill flex-shrink-0">🛡️ Đã chặn</button>
+        <button class="fpill flex-shrink-0">⚠️ Cảnh báo</button>
+        <button class="fpill flex-shrink-0">ℹ️ Hệ thống</button>
+      </div>
+    </header>
+
+    <!-- Stats -->
+    <div class="px-5 pt-4 page">
+      <div class="grid grid-cols-4 gap-2 mb-5">
+        <div class="card p-2.5 text-center">
+          <div class="font-display text-lg font-bold">247</div>
+          <div class="text-[9px] text-slate-500 uppercase tracking-widest">Tổng</div>
+        </div>
+        <div class="card p-2.5 text-center bg-red-500/5 border-red-500/20">
+          <div class="font-display text-lg font-bold text-red-400">3</div>
+          <div class="text-[9px] text-red-400 uppercase tracking-widest">Cháy</div>
+        </div>
+        <div class="card p-2.5 text-center bg-purple-500/5 border-purple-500/20">
+          <div class="font-display text-lg font-bold text-purple-400">42</div>
+          <div class="text-[9px] text-purple-400 uppercase tracking-widest">Chặn</div>
+        </div>
+        <div class="card p-2.5 text-center bg-cyan-glow/5 border-cyan-glow/20">
+          <div class="font-display text-lg font-bold text-cyan-glow">202</div>
+          <div class="text-[9px] text-cyan-glow uppercase tracking-widest">HT</div>
+        </div>
+      </div>
+
+      <!-- Grouped events -->
+      <section class="mb-5 fade-up">
+        <div class="text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2 px-1">Hôm nay</div>
+        <div class="card divide-y divide-white/5" id="evToday"></div>
+      </section>
+
+      <section class="mb-5 fade-up" style="animation-delay:100ms">
+        <div class="text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2 px-1">Trước đó</div>
+        <div class="card divide-y divide-white/5" id="evOlder"></div>
+      </section>
+
+      <div class="pb-32"></div>
+    </div>
+
+    <!-- Bottom tabs -->
+    <nav class="tab-bar safe-bottom px-5 pt-2 pb-3">
+      <div class="flex items-center justify-around">
+        <a href="home.html" class="tap flex flex-col items-center gap-1 px-3 py-1 text-slate-500">
+          <i class="ph-bold ph-house text-xl"></i>
+          <span class="text-[10px] font-semibold">Trang chủ</span>
+        </a>
+        <a href="cameras.html" class="tap flex flex-col items-center gap-1 px-3 py-1 text-slate-500">
+          <i class="ph-bold ph-video-camera text-xl"></i>
+          <span class="text-[10px] font-semibold">Camera</span>
+        </a>
+        <a href="events.html" class="tap flex flex-col items-center gap-1 px-3 py-1 text-flame-400">
+          <i class="ph-fill ph-clock-counter-clockwise text-xl"></i>
+          <span class="text-[10px] font-semibold">Lịch sử</span>
+        </a>
+        <a href="profile.html" class="tap flex flex-col items-center gap-1 px-3 py-1 text-slate-500">
+          <i class="ph-bold ph-user text-xl"></i>
+          <span class="text-[10px] font-semibold">Tôi</span>
+        </a>
+      </div>
+    </nav>
+  </div>
+
+  <style>
+    .fpill {
+      padding: 7px 14px; border-radius: 999px; font-size: 12px; font-weight: 600;
+      background: rgba(255,255,255,0.05); color: #94A3B8;
+      white-space: nowrap;
+    }
+    .fpill.active {
+      background: linear-gradient(135deg, #F04E17, #D13904);
+      color: white; box-shadow: 0 6px 18px -6px rgba(240,78,23,0.5);
+    }
+  </style>
+
+  <script>
+    const iconMap = {
+      alert:   { bg: 'bg-red-500/15',      color: 'text-red-400',     icon: 'ph-fire',       label: 'CHÁY' },
+      warn:    { bg: 'bg-yellow-500/15',   color: 'text-yellow-400',  icon: 'ph-warning',    label: 'CẢNH BÁO' },
+      blocked: { bg: 'bg-purple-500/15',   color: 'text-purple-400',  icon: 'ph-shield-check', label: 'ĐÃ CHẶN' },
+      info:    { bg: 'bg-cyan-glow/15',    color: 'text-cyan-glow',   icon: 'ph-info',       label: 'HỆ THỐNG' },
+    };
+
+    function buildRow(ev) {
+      const m = iconMap[ev.type] || iconMap.info;
+      const row = document.createElement('div');
+      row.className = 'flex items-center gap-3 px-4 py-3.5';
+      const ic = document.createElement('div');
+      ic.className = `flex-shrink-0 w-10 h-10 rounded-xl ${m.bg} grid place-items-center`;
+      const icEl = document.createElement('i');
+      icEl.className = `ph-fill ${m.icon} ${m.color} text-lg`;
+      ic.appendChild(icEl);
+      const b = document.createElement('div');
+      b.className = 'flex-1 min-w-0';
+      const tl = document.createElement('div');
+      tl.className = 'flex items-center gap-1.5';
+      const title = document.createElement('span');
+      title.className = 'text-sm font-semibold text-white truncate';
+      title.textContent = ev.title;
+      tl.appendChild(title);
+      if (ev.conf) {
+        const ct = document.createElement('span');
+        ct.className = 'text-[10px] font-mono text-slate-400';
+        ct.textContent = ev.conf + '%';
+        tl.appendChild(ct);
+      }
+      const meta = document.createElement('div');
+      meta.className = 'text-[11px] text-slate-500 mt-0.5';
+      meta.textContent = ev.time + (ev.cam ? ' · ' + ev.cam.toUpperCase() : '');
+      b.appendChild(tl); b.appendChild(meta);
+      const arr = document.createElement('i');
+      arr.className = 'ph-bold ph-caret-right text-slate-600';
+      row.appendChild(ic); row.appendChild(b); row.appendChild(arr);
+      return row;
+    }
+
+    const events = [
+      { type: 'blocked', title: 'Chặn cảnh báo sai (đèn LED)', time: '12:47', cam: 'cam2', conf: 42.1, group: 'today' },
+      { type: 'info',    title: 'Phát hiện chuyển động',       time: '11:15', cam: 'cam1', group: 'today' },
+      { type: 'info',    title: 'Hệ thống tự kiểm tra',         time: '10:30', cam: null,   group: 'today' },
+      { type: 'warn',    title: 'CAM4 mất kết nối',             time: '10:23', cam: 'cam4', group: 'today' },
+      { type: 'info',    title: 'Hệ thống khởi động',           time: '08:00', cam: null,   group: 'today' },
+      { type: 'blocked', title: 'Chặn cảnh báo sai (ánh nắng)', time: 'Hôm qua 16:32', cam: 'cam1', conf: 38.4, group: 'older' },
+      { type: 'alert',   title: 'Phát hiện lửa — đã dập tắt',   time: '2 ngày trước, 19:45', cam: 'cam2', conf: 96.3, group: 'older' },
+      { type: 'alert',   title: 'Phát hiện lửa nhỏ (SAHI)',     time: '5 ngày trước', cam: 'cam2', conf: 82.1, group: 'older' },
+    ];
+
+    const today = document.getElementById('evToday');
+    const older = document.getElementById('evOlder');
+    events.forEach(ev => (ev.group === 'today' ? today : older).appendChild(buildRow(ev)));
+  </script>
+</body>
+</html>

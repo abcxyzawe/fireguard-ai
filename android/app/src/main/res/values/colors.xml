@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- FireGuard brand palette -->
+    <color name="bg_base">#05070B</color>
+    <color name="bg_soft">#0B0E14</color>
+    <color name="bg_card">#12161F</color>
+    <color name="bg_hover">#1A1F2B</color>
+
+    <color name="flame_300">#FF9B66</color>
+    <color name="flame_400">#FF6F2C</color>
+    <color name="flame_500">#F04E17</color>
+    <color name="flame_600">#D13904</color>
+    <color name="flame_700">#A82A03</color>
+
+    <color name="fire_red">#EF4444</color>
+    <color name="smoke_orange">#F97316</color>
+    <color name="safe_green">#22C55E</color>
+    <color name="cyan_glow">#7FDBFF</color>
+
+    <color name="text_primary">#F1F5F9</color>
+    <color name="text_secondary">#94A3B8</color>
+    <color name="text_dim">#64748B</color>
+
+    <!-- Legacy -->
+    <color name="bg_dark">#05070B</color>
+    <color name="accent_blue">#F04E17</color>
+</resources>

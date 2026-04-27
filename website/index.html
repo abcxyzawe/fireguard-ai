@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="FireGuard AI - Hệ thống phát hiện và chữa cháy thông minh bằng AI cho nhà ở, văn phòng, phòng thí nghiệm. Phát hiện lửa trong 1 giây, dập cháy tự động." />
+  <title>FireGuard AI — Phát hiện cháy thông minh bằng AI</title>
+
+  <!-- Preload fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Phosphor Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+  <!-- Custom stylesheet -->
+  <link rel="stylesheet" href="assets/css/style.css" />
+
+  <!-- Tailwind config -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['"Space Grotesk"', 'system-ui', 'sans-serif'],
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            bg: {
+              base: '#05070B',
+              soft: '#0B0E14',
+              card: '#12161F',
+            },
+            flame: {
+              50: '#FFF4ED',
+              100: '#FFE3D0',
+              200: '#FFC4A0',
+              300: '#FF9B66',
+              400: '#FF6F2C',
+              500: '#F04E17',
+              600: '#D13904',
+              700: '#A82A03',
+              800: '#7A1F02',
+              900: '#541503',
+            },
+            ember: {
+              400: '#FFB36B',
+              500: '#FF8A3D',
+            },
+            cyan: {
+              glow: '#7FDBFF',
+            },
+          },
+          animation: {
+            'pulse-slow': 'pulseSlow 3s ease-in-out infinite',
+            'float': 'float 6s ease-in-out infinite',
+            'shimmer': 'shimmer 3s linear infinite',
+          },
+          keyframes: {
+            pulseSlow: {
+              '0%,100%': { opacity: 1 },
+              '50%': { opacity: 0.5 },
+            },
+            float: {
+              '0%,100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-12px)' },
+            },
+            shimmer: {
+              '0%': { backgroundPosition: '0% 0%' },
+              '100%': { backgroundPosition: '200% 0%' },
+            },
+          },
+        },
+      },
+    };
+  </script>
+</head>
+
+<body class="bg-bg-base text-slate-100 font-sans antialiased selection:bg-flame-500 selection:text-white">
+
+  <!-- ================== NAV ================== -->
+  <header id="nav" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500">
+    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 md:h-20">
+        <!-- Logo -->
+        <a href="#" class="flex items-center gap-2.5 group">
+          <div class="w-10 h-10 rounded-xl overflow-hidden bg-bg-base shadow-lg shadow-flame-500/30 group-hover:shadow-flame-500/60 transition-shadow ring-1 ring-flame-500/20">
+            <img src="assets/images/logo_dark.jpg" alt="FireGuard" class="w-full h-full object-cover" />
+          </div>
+          <span class="font-display font-bold text-lg md:text-xl tracking-tight">
+            Fire<span class="text-flame-400">Guard</span><span class="text-slate-400 font-normal">.AI</span>
+          </span>
+        </a>
+
+        <!-- Desktop nav -->
+        <div class="hidden lg:flex items-center gap-8 text-sm text-slate-300">
+          <a href="#features" class="hover:text-white transition whitespace-nowrap">Tính năng</a>
+          <a href="#how" class="hover:text-white transition whitespace-nowrap">Cách hoạt động</a>
+          <a href="#product" class="hover:text-white transition whitespace-nowrap">Sản phẩm</a>
+          <a href="#app" class="hover:text-white transition whitespace-nowrap">App Mobile</a>
+          <a href="#faq" class="hover:text-white transition whitespace-nowrap">FAQ</a>
+        </div>
+
+        <!-- CTA -->
+        <div class="flex items-center gap-3">
+          <a href="#contact" class="hidden lg:inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-flame-500 to-flame-600 text-white text-sm font-semibold shadow-lg shadow-flame-500/30 hover:shadow-flame-500/50 hover:-translate-y-0.5 transition-all whitespace-nowrap">
+            Liên hệ
+            <i class="ph-bold ph-arrow-right text-sm"></i>
+          </a>
+          <button id="menuBtn" class="lg:hidden w-10 h-10 rounded-lg grid place-items-center bg-white/5 hover:bg-white/10 transition" aria-label="Menu">
+            <i class="ph-bold ph-list text-xl"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile menu -->
+      <div id="mobileMenu" class="hidden lg:hidden pb-4 pt-2 space-y-1 text-sm bg-bg-base/95 backdrop-blur-xl -mx-4 sm:-mx-6 px-4 sm:px-6 border-t border-white/5">
+        <a href="#features" class="block px-4 py-3 rounded-lg hover:bg-white/5 text-slate-200">Tính năng</a>
+        <a href="#how" class="block px-4 py-3 rounded-lg hover:bg-white/5 text-slate-200">Cách hoạt động</a>
+        <a href="#product" class="block px-4 py-3 rounded-lg hover:bg-white/5 text-slate-200">Sản phẩm</a>
+        <a href="#app" class="block px-4 py-3 rounded-lg hover:bg-white/5 text-slate-200">App Mobile</a>
+        <a href="#faq" class="block px-4 py-3 rounded-lg hover:bg-white/5 text-slate-200">FAQ</a>
+        <a href="#contact" class="block mt-2 px-4 py-3 rounded-lg bg-gradient-to-r from-flame-500 to-flame-600 text-white font-semibold text-center">Liên hệ</a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- ================== HERO ================== -->
+  <section class="relative min-h-screen flex items-center overflow-hidden pt-24 pb-16">
+    <!-- Background image -->
+    <div class="absolute inset-0 -z-10">
+      <img src="assets/images/hero.jpg" alt="" class="w-full h-full object-cover opacity-40" />
+      <div class="absolute inset-0 bg-gradient-to-t from-bg-base via-bg-base/80 to-bg-base/60"></div>
+      <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(240,78,23,0.15),transparent_50%)]"></div>
+    </div>
+
+    <!-- Grid pattern -->
+    <div class="absolute inset-0 -z-10 opacity-[0.04] bg-[linear-gradient(rgba(255,255,255,0.7)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.7)_1px,transparent_1px)] bg-[size:48px_48px]"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full relative">
+      <div class="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+        <!-- Left: text -->
+        <div data-reveal>
+          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm text-xs font-medium text-flame-300">
+            <span class="relative flex w-2 h-2">
+              <span class="absolute inset-0 rounded-full bg-flame-400 animate-ping opacity-75"></span>
+              <span class="relative rounded-full bg-flame-400 w-2 h-2"></span>
+            </span>
+            Công nghệ AI thị giác máy — Phát hiện trong 1 giây
+          </div>
+
+          <h1 class="mt-6 font-display font-bold tracking-tight text-4xl sm:text-5xl lg:text-6xl xl:text-7xl leading-[1.05]">
+            Phát hiện cháy
+            <span class="block bg-gradient-to-r from-flame-400 via-ember-500 to-flame-600 bg-clip-text text-transparent">
+              thông minh bằng AI.
+            </span>
+            <span class="block text-white">Bảo vệ tức thì.</span>
+          </h1>
+
+          <p class="mt-6 text-lg sm:text-xl text-slate-300 max-w-xl leading-relaxed">
+            FireGuard AI sử dụng mô hình <span class="text-white font-semibold">YOLOv8</span> phát hiện ngọn lửa và khói
+            <span class="text-flame-300 font-semibold">ngay khi vừa xuất hiện</span>,
+            định vị chính xác, tự động điều khiển vòi phun và bơm để dập lửa —
+            mọi lúc, mọi nơi, ngay cả khi bạn không ở nhà.
+          </p>
+
+          <div class="mt-8 flex flex-wrap items-center gap-4">
+            <a href="#features" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-gradient-to-r from-flame-500 to-flame-600 text-white font-semibold shadow-xl shadow-flame-500/30 hover:shadow-flame-500/50 hover:-translate-y-0.5 transition-all">
+              Khám phá tính năng
+              <i class="ph-bold ph-arrow-right"></i>
+            </a>
+            <a href="#app" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white font-semibold transition">
+              <i class="ph-bold ph-device-mobile"></i>
+              Xem App Mobile
+            </a>
+          </div>
+
+          <!-- Trust stats -->
+          <div class="mt-10 grid grid-cols-3 gap-4 sm:gap-8 max-w-lg">
+            <div>
+              <div class="font-display text-2xl sm:text-3xl font-bold text-white">88.2<span class="text-flame-400">%</span></div>
+              <div class="text-xs sm:text-sm text-slate-400 mt-0.5">Độ chính xác mAP</div>
+            </div>
+            <div>
+              <div class="font-display text-2xl sm:text-3xl font-bold text-white">&lt;1<span class="text-flame-400">s</span></div>
+              <div class="text-xs sm:text-sm text-slate-400 mt-0.5">Thời gian phát hiện</div>
+            </div>
+            <div>
+              <div class="font-display text-2xl sm:text-3xl font-bold text-white">24/7</div>
+              <div class="text-xs sm:text-sm text-slate-400 mt-0.5">Giám sát liên tục</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: preview card -->
+        <div data-reveal data-reveal-delay="150" class="relative">
+          <!-- Glow -->
+          <div class="absolute -inset-8 bg-gradient-to-tr from-flame-500/20 to-cyan-glow/10 rounded-3xl blur-3xl"></div>
+
+          <div class="relative rounded-3xl overflow-hidden border border-white/10 bg-bg-card shadow-2xl shadow-black/50">
+            <!-- Top bar -->
+            <div class="flex items-center gap-2 px-4 py-3 border-b border-white/5 bg-black/30">
+              <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-yellow-500"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>
+              <span class="ml-3 text-xs text-slate-400 font-mono">FireGuard Dashboard · LIVE</span>
+              <span class="ml-auto flex items-center gap-1.5 text-xs text-red-400 font-semibold">
+                <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
+                REC
+              </span>
+            </div>
+
+            <!-- Camera preview -->
+            <div class="relative aspect-video bg-black">
+              <img src="assets/images/city.jpg" alt="" class="w-full h-full object-cover opacity-80" />
+              <!-- Fake detection boxes -->
+              <div class="absolute top-[38%] left-[45%] w-[18%] h-[22%] border-2 border-flame-400 rounded-md shadow-[0_0_0_4px_rgba(240,78,23,0.15)]">
+                <span class="absolute -top-6 left-0 px-2 py-0.5 bg-flame-500 text-white text-[10px] font-bold rounded">
+                  FIRE · 96.3%
+                </span>
+              </div>
+              <!-- Crosshair -->
+              <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 border border-cyan-glow/60 rounded-full">
+                <div class="absolute top-1/2 left-0 right-0 border-t border-cyan-glow/50"></div>
+                <div class="absolute left-1/2 top-0 bottom-0 border-l border-cyan-glow/50"></div>
+              </div>
+
+              <!-- Overlay HUD -->
+              <div class="absolute bottom-3 left-3 right-3 flex items-center justify-between">
+                <div class="flex items-center gap-2 px-2.5 py-1.5 rounded-md bg-black/60 backdrop-blur-sm text-[11px] font-mono">
+                  <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
+                  CAM1 · 800×600 · 30fps
+                </div>
+                <div class="px-2.5 py-1.5 rounded-md bg-flame-500/90 text-white text-[11px] font-bold tracking-wider">
+                  ALERT
+                </div>
+              </div>
+            </div>
+
+            <!-- Detection stats -->
+            <div class="grid grid-cols-3 divide-x divide-white/5 text-center text-xs">
+              <div class="px-3 py-3">
+                <div class="text-slate-400">Confidence</div>
+                <div class="mt-1 font-mono font-bold text-flame-400">96.3%</div>
+              </div>
+              <div class="px-3 py-3">
+                <div class="text-slate-400">Verify</div>
+                <div class="mt-1 font-mono font-bold text-white">72.1%</div>
+              </div>
+              <div class="px-3 py-3">
+                <div class="text-slate-400">Servo</div>
+                <div class="mt-1 font-mono font-bold text-cyan-glow">↻ 42°</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Floating badge -->
+          <div class="hidden sm:flex absolute -bottom-6 -left-6 items-center gap-3 px-4 py-3 rounded-2xl bg-bg-card border border-white/10 shadow-xl animate-float">
+            <div class="w-10 h-10 rounded-xl bg-flame-500/20 grid place-items-center">
+              <i class="ph-fill ph-lightning text-flame-400 text-xl"></i>
+            </div>
+            <div>
+              <div class="text-xs text-slate-400">Đã dập cháy</div>
+              <div class="text-sm font-bold">2.3 giây</div>
+            </div>
+          </div>
+
+          <div class="hidden sm:flex absolute -top-6 -right-6 items-center gap-3 px-4 py-3 rounded-2xl bg-bg-card border border-white/10 shadow-xl" style="animation: float 6s ease-in-out infinite 2s;">
+            <div class="w-10 h-10 rounded-xl bg-cyan-glow/20 grid place-items-center">
+              <i class="ph-fill ph-cpu text-cyan-glow text-xl"></i>
+            </div>
+            <div>
+              <div class="text-xs text-slate-400">AI YOLOv8</div>
+              <div class="text-sm font-bold">đang chạy</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-slate-500 text-xs">
+      <div class="w-px h-8 bg-gradient-to-b from-slate-600 to-transparent"></div>
+      <span>Cuộn xuống</span>
+    </div>
+  </section>
+
+  <!-- ================== STATS STRIP ================== -->
+  <section class="py-14 border-y border-white/5 bg-bg-soft">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-10">
+        <p class="text-xs font-bold text-flame-400 tracking-widest uppercase">Tình hình cháy nổ tại Việt Nam</p>
+        <h2 class="mt-2 font-display text-2xl sm:text-3xl lg:text-4xl font-bold text-white">
+          Hiểm họa luôn hiện diện — Cần giải pháp chủ động
+        </h2>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+        <div class="p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-white/5 to-transparent border border-white/5" data-reveal>
+          <div class="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-flame-400">3.440</div>
+          <div class="mt-1 text-sm text-slate-400">vụ cháy năm 2023</div>
+        </div>
+        <div class="p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-white/5 to-transparent border border-white/5" data-reveal data-reveal-delay="100">
+          <div class="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-flame-400">146</div>
+          <div class="mt-1 text-sm text-slate-400">người thiệt mạng</div>
+        </div>
+        <div class="p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-white/5 to-transparent border border-white/5" data-reveal data-reveal-delay="200">
+          <div class="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-flame-400">878<span class="text-xl">tỷ</span></div>
+          <div class="mt-1 text-sm text-slate-400">đồng thiệt hại</div>
+        </div>
+        <div class="p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-white/5 to-transparent border border-white/5" data-reveal data-reveal-delay="300">
+          <div class="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-flame-400">5<span class="text-xl">phút</span></div>
+          <div class="mt-1 text-sm text-slate-400">"thời điểm vàng"</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================== FEATURES ================== -->
+  <section id="features" class="py-20 sm:py-28 relative">
+    <div class="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,rgba(240,78,23,0.08),transparent_60%)]"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Section heading -->
+      <div class="max-w-2xl mx-auto text-center" data-reveal>
+        <p class="text-xs font-bold text-flame-400 tracking-widest uppercase">Tính năng nổi bật</p>
+        <h2 class="mt-3 font-display text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight">
+          Công nghệ AI tiên tiến
+          <span class="text-flame-400">bảo vệ tối đa</span>
+        </h2>
+        <p class="mt-4 text-slate-400 text-base sm:text-lg">
+          Không chỉ phát hiện — FireGuard AI xác minh, định vị, và xử lý đám cháy ngay lập tức.
+        </p>
+      </div>
+
+      <!-- Feature grid -->
+      <div class="mt-14 grid md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+        <!-- Card 1 -->
+        <div data-reveal class="group relative rounded-2xl bg-bg-card border border-white/5 hover:border-flame-400/30 transition-all hover:-translate-y-1 overflow-hidden">
+          <div class="aspect-[4/3] overflow-hidden bg-[#0B1428]">
+            <img src="assets/images/feat_ai.jpg" alt="" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+          </div>
+          <div class="p-6 sm:p-7">
+            <h3 class="font-display text-xl font-bold text-white">AI Thị giác máy YOLOv8</h3>
+            <p class="mt-3 text-sm text-slate-400 leading-relaxed">
+              Mô hình Deep Learning huấn luyện trên 38.000+ ảnh lửa/khói, độ chính xác mAP 88.2%, phát hiện trong thời gian thực.
+            </p>
+          </div>
+          <div class="absolute inset-x-0 -bottom-px h-px bg-gradient-to-r from-transparent via-flame-400/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        </div>
+
+        <!-- Card 2 -->
+        <div data-reveal data-reveal-delay="100" class="group relative rounded-2xl bg-bg-card border border-white/5 hover:border-flame-400/30 transition-all hover:-translate-y-1 overflow-hidden">
+          <div class="aspect-[4/3] overflow-hidden bg-[#0B1428]">
+            <img src="assets/images/feat_verify.jpg" alt="" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+          </div>
+          <div class="p-6 sm:p-7">
+            <h3 class="font-display text-xl font-bold text-white">Xác minh đa tiêu chí</h3>
+            <p class="mt-3 text-sm text-slate-400 leading-relaxed">
+              5 lớp lọc: màu sắc, lõi lửa, gradient, texture, biên cạnh — loại bỏ cảnh báo sai do đèn LED, phản chiếu.
+            </p>
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div data-reveal data-reveal-delay="200" class="group relative rounded-2xl bg-bg-card border border-white/5 hover:border-flame-400/30 transition-all hover:-translate-y-1 overflow-hidden">
+          <div class="aspect-[4/3] overflow-hidden bg-[#0B1428]">
+            <img src="assets/images/feat_target.jpg" alt="" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+          </div>
+          <div class="p-6 sm:p-7">
+            <h3 class="font-display text-xl font-bold text-white">Định vị chính xác</h3>
+            <p class="mt-3 text-sm text-slate-400 leading-relaxed">
+              Tính tọa độ tâm ngọn lửa, điều khiển servo 2 trục xoay vòi phun đúng hướng để dập cháy trực diện.
+            </p>
+          </div>
+        </div>
+
+        <!-- Card 4 -->
+        <div data-reveal class="group relative rounded-2xl bg-bg-card border border-white/5 hover:border-flame-400/30 transition-all hover:-translate-y-1 overflow-hidden">
+          <div class="aspect-[4/3] overflow-hidden bg-[#0B1428]">
+            <img src="assets/images/feat_alert.jpg" alt="" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+          </div>
+          <div class="p-6 sm:p-7">
+            <h3 class="font-display text-xl font-bold text-white">Cảnh báo đa kênh</h3>
+            <p class="mt-3 text-sm text-slate-400 leading-relaxed">
+              Chuông tại chỗ, push notification trên app Android, dashboard web realtime — đảm bảo bạn không bỏ lỡ.
+            </p>
+          </div>
+        </div>
+
+        <!-- Card 5 -->
+        <div data-reveal data-reveal-delay="100" class="group relative rounded-2xl bg-bg-card border border-white/5 hover:border-flame-400/30 transition-all hover:-translate-y-1 overflow-hidden">
+          <div class="aspect-[4/3] overflow-hidden bg-[#0B1428]">
+            <img src="assets/images/feat_water.jpg" alt="" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+          </div>
+          <div class="p-6 sm:p-7">
+            <h3 class="font-display text-xl font-bold text-white">Dập cháy tự động</h3>
+            <p class="mt-3 text-sm text-slate-400 leading-relaxed">
+              Relay kích hoạt máy bơm, vòi phun định hướng phun nước trực tiếp vào ngọn lửa — trong 2-3 giây.
+            </p>
+          </div>
+        </div>
+
+        <!-- Card 6 -->
+        <div data-reveal data-reveal-delay="200" class="group relative rounded-2xl bg-bg-card border border-white/5 hover:border-flame-400/30 transition-all hover:-translate-y-1 overflow-hidden">
+          <div class="aspect-[4/3] overflow-hidden bg-[#0B1428]">
+            <img src="assets/images/feat_mobile.jpg" alt="" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+          </div>
+          <div class="p-6 sm:p-7">
+            <h3 class="font-display text-xl font-bold text-white">App Android chuyên nghiệp</h3>
+            <p class="mt-3 text-sm text-slate-400 leading-relaxed">
+              Xem camera từ xa, nhận thông báo tức thì, xem lịch sử sự cố, điều khiển hệ thống bằng 1 chạm.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================== HOW IT WORKS ================== -->
+  <section id="how" class="py-20 sm:py-28 bg-bg-soft relative overflow-hidden">
+    <div class="absolute inset-0 -z-10 opacity-30">
+      <img src="assets/images/ai.jpg" alt="" class="w-full h-full object-cover" />
+      <div class="absolute inset-0 bg-bg-soft/80"></div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-2xl mx-auto text-center" data-reveal>
+        <p class="text-xs font-bold text-flame-400 tracking-widest uppercase">Quy trình hoạt động</p>
+        <h2 class="mt-3 font-display text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight">
+          Từ phát hiện tới dập cháy
+          <span class="block text-flame-400">chỉ trong vài giây</span>
+        </h2>
+      </div>
+
+      <!-- Timeline -->
+      <div class="mt-16 relative">
+        <!-- Connecting line (desktop) -->
+        <div class="hidden lg:block absolute top-10 left-[12.5%] right-[12.5%] h-0.5 bg-gradient-to-r from-flame-500/0 via-flame-500/50 to-flame-500/0"></div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-6 relative">
+          <!-- Step 1 -->
+          <div data-reveal class="text-center">
+            <div class="relative inline-flex">
+              <div class="w-20 h-20 rounded-full bg-gradient-to-br from-flame-500 to-flame-700 grid place-items-center shadow-lg shadow-flame-500/40">
+                <i class="ph-fill ph-video-camera text-white text-3xl"></i>
+              </div>
+              <span class="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-bg-card border-2 border-flame-400 grid place-items-center font-display font-bold text-xs text-flame-300">01</span>
+            </div>
+            <h3 class="mt-5 font-display font-bold text-lg text-white">Thu nhận ảnh</h3>
+            <p class="mt-2 text-sm text-slate-400 leading-relaxed">
+              ESP32-CAM chụp ảnh 800×600 @ 15 FPS, gửi về server qua WiFi
+            </p>
+          </div>
+
+          <!-- Step 2 -->
+          <div data-reveal data-reveal-delay="100" class="text-center">
+            <div class="relative inline-flex">
+              <div class="w-20 h-20 rounded-full bg-gradient-to-br from-flame-500 to-flame-700 grid place-items-center shadow-lg shadow-flame-500/40">
+                <i class="ph-fill ph-brain text-white text-3xl"></i>
+              </div>
+              <span class="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-bg-card border-2 border-flame-400 grid place-items-center font-display font-bold text-xs text-flame-300">02</span>
+            </div>
+            <h3 class="mt-5 font-display font-bold text-lg text-white">AI phân tích</h3>
+            <p class="mt-2 text-sm text-slate-400 leading-relaxed">
+              YOLOv8 + xác minh 5 tiêu chí + motion check xác nhận lửa thật
+            </p>
+          </div>
+
+          <!-- Step 3 -->
+          <div data-reveal data-reveal-delay="200" class="text-center">
+            <div class="relative inline-flex">
+              <div class="w-20 h-20 rounded-full bg-gradient-to-br from-flame-500 to-flame-700 grid place-items-center shadow-lg shadow-flame-500/40">
+                <i class="ph-fill ph-bell-ringing text-white text-3xl"></i>
+              </div>
+              <span class="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-bg-card border-2 border-flame-400 grid place-items-center font-display font-bold text-xs text-flame-300">03</span>
+            </div>
+            <h3 class="mt-5 font-display font-bold text-lg text-white">Cảnh báo tức thì</h3>
+            <p class="mt-2 text-sm text-slate-400 leading-relaxed">
+              Push notification + còi báo động + hiển thị trên app và web
+            </p>
+          </div>
+
+          <!-- Step 4 -->
+          <div data-reveal data-reveal-delay="300" class="text-center">
+            <div class="relative inline-flex">
+              <div class="w-20 h-20 rounded-full bg-gradient-to-br from-flame-500 to-flame-700 grid place-items-center shadow-lg shadow-flame-500/40">
+                <i class="ph-fill ph-drop text-white text-3xl"></i>
+              </div>
+              <span class="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-bg-card border-2 border-flame-400 grid place-items-center font-display font-bold text-xs text-flame-300">04</span>
+            </div>
+            <h3 class="mt-5 font-display font-bold text-lg text-white">Dập cháy</h3>
+            <p class="mt-2 text-sm text-slate-400 leading-relaxed">
+              Servo xoay vòi phun + relay bật bơm nước, phun trực diện ngọn lửa
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================== FAMILY / HUMAN ================== -->
+  <section class="py-20 sm:py-28 relative overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+        <!-- Family image -->
+        <div data-reveal class="relative order-2 lg:order-1">
+          <div class="absolute -inset-6 bg-gradient-to-tr from-flame-500/20 via-transparent to-cyan-glow/10 rounded-3xl blur-3xl"></div>
+          <div class="relative rounded-3xl overflow-hidden border border-white/10">
+            <img src="assets/images/family.jpg" alt="Gia đình an toàn" class="w-full h-[480px] object-cover" />
+            <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-6">
+              <div class="flex items-center gap-2 text-xs">
+                <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+                <span class="text-green-400 font-semibold">HỆ THỐNG ĐANG HOẠT ĐỘNG</span>
+              </div>
+              <div class="mt-1 text-white font-display font-bold text-lg">Gia đình bạn được bảo vệ 24/7</div>
+            </div>
+          </div>
+          <!-- Fire inset -->
+          <div class="hidden sm:block absolute -top-4 -left-4 w-44 rounded-2xl overflow-hidden border-4 border-bg-base shadow-2xl -rotate-3 hover:rotate-0 transition-transform">
+            <img src="assets/images/fire_small.jpg" alt="Phát hiện lửa nhỏ" class="w-full h-28 object-cover" />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+            <div class="absolute bottom-2 left-2 right-2">
+              <div class="text-[10px] text-flame-400 font-bold">PHÁT HIỆN</div>
+              <div class="text-xs text-white font-semibold">Ngọn lửa nhỏ nhất</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Content -->
+        <div data-reveal data-reveal-delay="100" class="order-1 lg:order-2">
+          <p class="text-xs font-bold text-flame-400 tracking-widest uppercase">Vì sự an toàn của gia đình</p>
+          <h2 class="mt-3 font-display text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight">
+            Bạn không thể ở nhà 24/7.
+            <span class="block mt-1 text-flame-400">Nhưng chúng tôi có thể.</span>
+          </h2>
+          <p class="mt-5 text-slate-400 text-base sm:text-lg leading-relaxed">
+            90% các vụ cháy trong nhà xảy ra khi không có ai giám sát. FireGuard AI giám sát liên tục — cả khi bạn đi làm, đi chơi, hay đang ngủ.
+          </p>
+
+          <div class="mt-8 space-y-5">
+            <div class="flex gap-4">
+              <div class="flex-shrink-0 w-10 h-10 rounded-xl bg-flame-500/15 grid place-items-center">
+                <i class="ph-fill ph-house-simple text-flame-400 text-xl"></i>
+              </div>
+              <div>
+                <div class="font-display font-bold text-white">Cho người thân</div>
+                <p class="mt-1 text-sm text-slate-400">Bảo vệ cha mẹ lớn tuổi, con cái ở một mình khi bạn đi vắng.</p>
+              </div>
+            </div>
+            <div class="flex gap-4">
+              <div class="flex-shrink-0 w-10 h-10 rounded-xl bg-flame-500/15 grid place-items-center">
+                <i class="ph-fill ph-moon text-flame-400 text-xl"></i>
+              </div>
+              <div>
+                <div class="font-display font-bold text-white">Yên tâm giấc ngủ</div>
+                <p class="mt-1 text-sm text-slate-400">Hệ thống tự phát hiện và dập cháy ngay cả khi bạn đang ngủ say.</p>
+              </div>
+            </div>
+            <div class="flex gap-4">
+              <div class="flex-shrink-0 w-10 h-10 rounded-xl bg-flame-500/15 grid place-items-center">
+                <i class="ph-fill ph-airplane-takeoff text-flame-400 text-xl"></i>
+              </div>
+              <div>
+                <div class="font-display font-bold text-white">Đi xa không lo</div>
+                <p class="mt-1 text-sm text-slate-400">Nhận cảnh báo tức thì trên điện thoại dù đang ở bất kỳ đâu.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================== PRODUCT ================== -->
+  <section id="product" class="py-20 sm:py-28">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+        <!-- Image stack -->
+        <div data-reveal class="relative">
+          <div class="absolute -inset-8 bg-gradient-to-br from-flame-500/20 to-transparent rounded-3xl blur-3xl"></div>
+          <div class="relative rounded-3xl overflow-hidden border border-white/10 bg-bg-card">
+            <img src="assets/images/turret.jpg" alt="FireGuard Hardware" class="w-full h-[500px] object-cover" />
+            <!-- Spec annotations -->
+            <div class="absolute top-6 left-6 px-3 py-2 rounded-lg bg-black/70 backdrop-blur-md border border-white/10 text-xs">
+              <div class="text-flame-400 font-bold">HARDWARE</div>
+              <div class="text-white font-semibold mt-0.5">ESP32-CAM + Servo + Pump</div>
+            </div>
+            <div class="absolute bottom-6 right-6 px-3 py-2 rounded-lg bg-black/70 backdrop-blur-md border border-white/10 text-xs">
+              <div class="text-flame-400 font-bold">POWER</div>
+              <div class="text-white font-semibold mt-0.5">5V · Tiết kiệm điện</div>
+            </div>
+          </div>
+          <!-- Secondary image: installation -->
+          <div class="hidden sm:block absolute -bottom-8 -right-6 w-56 rounded-2xl overflow-hidden border-4 border-bg-base shadow-2xl rotate-3 hover:rotate-0 transition-transform">
+            <img src="assets/images/install.jpg" alt="Installation" class="w-full h-36 object-cover" />
+            <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/90 to-transparent p-3 pt-10">
+              <div class="text-[10px] text-flame-400 font-bold tracking-wider">LẮP ĐẶT</div>
+              <div class="text-xs text-white font-semibold">Trong 1 giờ</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Content -->
+        <div data-reveal data-reveal-delay="100">
+          <p class="text-xs font-bold text-flame-400 tracking-widest uppercase">Sản phẩm phần cứng</p>
+          <h2 class="mt-3 font-display text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight">
+            Thiết kế nhỏ gọn.
+            <span class="block text-flame-400">Công nghệ mạnh mẽ.</span>
+          </h2>
+          <p class="mt-5 text-slate-400 text-base sm:text-lg leading-relaxed">
+            Bộ thiết bị FireGuard tích hợp camera AI, servo 2 trục, relay, máy bơm nước — lắp đặt đơn giản không cần cải tạo công trình, phù hợp mọi không gian từ căn hộ nhỏ đến nhà xưởng.
+          </p>
+
+          <!-- Specs list -->
+          <ul class="mt-8 space-y-3.5">
+            <li class="flex items-start gap-3">
+              <div class="w-5 h-5 rounded-full bg-flame-500/20 grid place-items-center flex-shrink-0 mt-0.5">
+                <i class="ph-bold ph-check text-flame-400 text-xs"></i>
+              </div>
+              <span class="text-slate-300"><span class="text-white font-semibold">ESP32-CAM AI Thinker</span> — camera OV2640 độ phân giải 800×600</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <div class="w-5 h-5 rounded-full bg-flame-500/20 grid place-items-center flex-shrink-0 mt-0.5">
+                <i class="ph-bold ph-check text-flame-400 text-xs"></i>
+              </div>
+              <span class="text-slate-300"><span class="text-white font-semibold">Raspberry Pi 4</span> — xử lý AI tại chỗ, không cần internet</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <div class="w-5 h-5 rounded-full bg-flame-500/20 grid place-items-center flex-shrink-0 mt-0.5">
+                <i class="ph-bold ph-check text-flame-400 text-xs"></i>
+              </div>
+              <span class="text-slate-300"><span class="text-white font-semibold">Arduino UNO/Mega</span> — điều khiển servo, relay, máy bơm</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <div class="w-5 h-5 rounded-full bg-flame-500/20 grid place-items-center flex-shrink-0 mt-0.5">
+                <i class="ph-bold ph-check text-flame-400 text-xs"></i>
+              </div>
+              <span class="text-slate-300"><span class="text-white font-semibold">Servo 2 trục</span> — xoay vòi phun nhắm chính xác ngọn lửa</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <div class="w-5 h-5 rounded-full bg-flame-500/20 grid place-items-center flex-shrink-0 mt-0.5">
+                <i class="ph-bold ph-check text-flame-400 text-xs"></i>
+              </div>
+              <span class="text-slate-300"><span class="text-white font-semibold">Máy bơm + relay</span> — phun nước tức thì khi phát hiện</span>
+            </li>
+          </ul>
+
+          <div class="mt-10 flex flex-wrap gap-4">
+            <a href="#contact" class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-flame-500 to-flame-600 text-white font-semibold shadow-lg shadow-flame-500/30 hover:shadow-flame-500/50 transition-all">
+              Đặt mua <i class="ph-bold ph-arrow-right"></i>
+            </a>
+            <a href="#how" class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white font-semibold transition">
+              <i class="ph-bold ph-book-open"></i> Tài liệu kỹ thuật
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================== MOBILE APP ================== -->
+  <section id="app" class="py-20 sm:py-28 bg-bg-soft relative overflow-hidden">
+    <div class="absolute top-0 right-0 w-1/2 h-full -z-10 bg-[radial-gradient(ellipse_at_top_right,rgba(240,78,23,0.12),transparent_60%)]"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+        <!-- Content -->
+        <div data-reveal>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-flame-500/10 border border-flame-500/20 text-xs text-flame-300 font-medium">
+            <i class="ph-fill ph-android-logo"></i>
+            App Android chính thức
+          </div>
+          <h2 class="mt-4 font-display text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight">
+            Kiểm soát
+            <span class="block">an toàn nhà bạn</span>
+            <span class="block text-flame-400">từ trong lòng bàn tay</span>
+          </h2>
+          <p class="mt-5 text-slate-400 text-base sm:text-lg leading-relaxed">
+            Ứng dụng FireGuard cho Android — xem camera, nhận cảnh báo push, điều khiển hệ thống mọi lúc mọi nơi. Không phát sinh chi phí hàng tháng.
+          </p>
+
+          <!-- Feature mini cards -->
+          <div class="mt-8 grid grid-cols-2 gap-4">
+            <div class="p-4 rounded-xl bg-white/5 border border-white/5">
+              <i class="ph-fill ph-bell-simple-ringing text-flame-400 text-2xl"></i>
+              <div class="mt-2 font-semibold text-white">Push Notification</div>
+              <div class="text-xs text-slate-400 mt-0.5">Tức thì khi có cháy</div>
+            </div>
+            <div class="p-4 rounded-xl bg-white/5 border border-white/5">
+              <i class="ph-fill ph-monitor-play text-flame-400 text-2xl"></i>
+              <div class="mt-2 font-semibold text-white">Live Camera</div>
+              <div class="text-xs text-slate-400 mt-0.5">Realtime 24/7</div>
+            </div>
+            <div class="p-4 rounded-xl bg-white/5 border border-white/5">
+              <i class="ph-fill ph-clock-counter-clockwise text-flame-400 text-2xl"></i>
+              <div class="mt-2 font-semibold text-white">Lịch sử sự cố</div>
+              <div class="text-xs text-slate-400 mt-0.5">Ảnh + thời gian</div>
+            </div>
+            <div class="p-4 rounded-xl bg-white/5 border border-white/5">
+              <i class="ph-fill ph-sliders text-flame-400 text-2xl"></i>
+              <div class="mt-2 font-semibold text-white">Điều khiển từ xa</div>
+              <div class="text-xs text-slate-400 mt-0.5">Bật/tắt hệ thống</div>
+            </div>
+          </div>
+
+          <div class="mt-10 flex flex-wrap gap-4">
+            <a href="#contact" class="inline-flex items-center gap-3 px-5 py-3 rounded-xl bg-white text-black font-semibold hover:bg-slate-100 transition shadow-lg">
+              <i class="ph-fill ph-google-play-logo text-xl text-flame-500"></i>
+              <div class="text-left">
+                <div class="text-[10px] font-normal leading-none">TẢI TRÊN</div>
+                <div class="text-sm leading-tight mt-0.5">Google Play</div>
+              </div>
+            </a>
+            <a href="#contact" class="inline-flex items-center gap-3 px-5 py-3 rounded-xl bg-white/5 border border-white/10 text-white font-semibold hover:bg-white/10 transition">
+              <i class="ph-fill ph-download-simple text-xl text-flame-400"></i>
+              <div class="text-left">
+                <div class="text-[10px] font-normal leading-none text-slate-400">TẢI FILE</div>
+                <div class="text-sm leading-tight mt-0.5">APK v1.0</div>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- Phone mockup -->
+        <div data-reveal data-reveal-delay="150" class="relative flex justify-center lg:justify-end">
+          <div class="absolute -inset-8 bg-gradient-to-t from-flame-500/20 via-transparent to-transparent rounded-full blur-3xl"></div>
+
+          <!-- Phone frame -->
+          <div class="relative w-[280px] sm:w-[320px] aspect-[9/19.5] rounded-[3rem] border-[10px] border-slate-800 bg-black shadow-2xl overflow-hidden">
+            <!-- Notch -->
+            <div class="absolute top-2 left-1/2 -translate-x-1/2 w-20 h-5 rounded-full bg-black z-10"></div>
+
+            <!-- Screen -->
+            <div class="absolute inset-0 overflow-hidden bg-bg-base">
+              <!-- Status bar -->
+              <div class="flex items-center justify-between px-6 pt-3 text-[10px] font-semibold text-white">
+                <span>9:41</span>
+                <span class="flex items-center gap-1">
+                  <i class="ph-fill ph-wifi-high"></i>
+                  <i class="ph-fill ph-battery-full"></i>
+                </span>
+              </div>
+
+              <!-- App header -->
+              <div class="px-5 pt-5">
+                <div class="flex items-center gap-2">
+                  <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-flame-500 to-flame-700 grid place-items-center">
+                    <i class="ph-fill ph-flame text-white text-sm"></i>
+                  </div>
+                  <div>
+                    <div class="text-[10px] text-slate-400">Xin chào</div>
+                    <div class="text-sm font-bold text-white">Quốc Anh</div>
+                  </div>
+                  <i class="ph-bold ph-bell-ringing text-flame-400 text-lg ml-auto"></i>
+                </div>
+              </div>
+
+              <!-- Alert card -->
+              <div class="mx-5 mt-5 p-4 rounded-2xl bg-gradient-to-br from-flame-500 to-flame-700 shadow-xl shadow-flame-500/40">
+                <div class="flex items-start gap-3">
+                  <div class="w-10 h-10 rounded-full bg-white/20 grid place-items-center animate-pulse">
+                    <i class="ph-fill ph-fire text-white text-xl"></i>
+                  </div>
+                  <div class="flex-1">
+                    <div class="text-white text-xs font-bold">PHÁT HIỆN LỬA</div>
+                    <div class="text-white/80 text-[10px] mt-0.5">Phòng khách · 12:47</div>
+                  </div>
+                </div>
+                <div class="mt-3 text-[10px] text-white/90">Hệ thống đã tự động kích hoạt vòi phun</div>
+              </div>
+
+              <!-- Live camera -->
+              <div class="mx-5 mt-4 rounded-xl overflow-hidden aspect-video relative">
+                <img src="assets/images/city.jpg" class="w-full h-full object-cover" alt="" />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+                <div class="absolute top-2 left-2 flex items-center gap-1 px-2 py-0.5 rounded bg-red-500 text-[8px] text-white font-bold">
+                  <span class="w-1 h-1 rounded-full bg-white animate-pulse"></span>
+                  LIVE
+                </div>
+                <div class="absolute bottom-2 left-2 right-2 flex items-center justify-between">
+                  <span class="text-[9px] text-white font-semibold">Cam 1 · Phòng khách</span>
+                  <span class="text-[9px] text-flame-300 font-bold">96.3%</span>
+                </div>
+              </div>
+
+              <!-- Quick actions -->
+              <div class="mx-5 mt-4 grid grid-cols-3 gap-2">
+                <div class="p-3 rounded-xl bg-white/5 text-center">
+                  <i class="ph-fill ph-power text-flame-400 text-lg"></i>
+                  <div class="text-[9px] text-white mt-1">Bật/Tắt</div>
+                </div>
+                <div class="p-3 rounded-xl bg-white/5 text-center">
+                  <i class="ph-fill ph-siren text-flame-400 text-lg"></i>
+                  <div class="text-[9px] text-white mt-1">Còi báo</div>
+                </div>
+                <div class="p-3 rounded-xl bg-white/5 text-center">
+                  <i class="ph-fill ph-drop text-flame-400 text-lg"></i>
+                  <div class="text-[9px] text-white mt-1">Bơm nước</div>
+                </div>
+              </div>
+
+              <!-- Tab bar -->
+              <div class="absolute bottom-0 inset-x-0 bg-bg-card/95 backdrop-blur-md border-t border-white/5 py-3 px-6 flex justify-around">
+                <i class="ph-fill ph-house text-flame-400 text-xl"></i>
+                <i class="ph-bold ph-video-camera text-slate-500 text-xl"></i>
+                <i class="ph-bold ph-clock-counter-clockwise text-slate-500 text-xl"></i>
+                <i class="ph-bold ph-user text-slate-500 text-xl"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Floating notification -->
+          <div class="hidden md:flex absolute -left-4 top-10 items-center gap-3 p-3 rounded-2xl bg-bg-card border border-white/10 shadow-xl animate-float max-w-[200px]">
+            <div class="w-9 h-9 rounded-xl bg-flame-500/20 grid place-items-center flex-shrink-0">
+              <i class="ph-fill ph-bell text-flame-400"></i>
+            </div>
+            <div>
+              <div class="text-xs font-bold text-white">Cảnh báo mới</div>
+              <div class="text-[10px] text-slate-400">Vừa xong · Phòng khách</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================== TARGETS ================== -->
+  <section class="py-20 sm:py-28">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-2xl mx-auto text-center" data-reveal>
+        <p class="text-xs font-bold text-flame-400 tracking-widest uppercase">Đối tượng sử dụng</p>
+        <h2 class="mt-3 font-display text-3xl sm:text-4xl lg:text-5xl font-bold">
+          Phù hợp với mọi không gian
+        </h2>
+      </div>
+
+      <div class="mt-14 grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div data-reveal class="p-6 rounded-2xl bg-bg-card border border-white/5 hover:border-flame-400/30 transition">
+          <div class="w-12 h-12 rounded-xl bg-flame-500/15 grid place-items-center mb-4">
+            <i class="ph-fill ph-house-line text-flame-400 text-2xl"></i>
+          </div>
+          <h3 class="font-display font-bold text-lg text-white">Hộ gia đình</h3>
+          <p class="mt-2 text-sm text-slate-400">Căn hộ, chung cư mini, nhà trọ — nơi thường thiếu hệ thống phòng cháy.</p>
+        </div>
+
+        <div data-reveal data-reveal-delay="100" class="p-6 rounded-2xl bg-bg-card border border-white/5 hover:border-flame-400/30 transition">
+          <div class="w-12 h-12 rounded-xl bg-flame-500/15 grid place-items-center mb-4">
+            <i class="ph-fill ph-graduation-cap text-flame-400 text-2xl"></i>
+          </div>
+          <h3 class="font-display font-bold text-lg text-white">Trường học</h3>
+          <p class="mt-2 text-sm text-slate-400">Phòng học, phòng thí nghiệm, thư viện — bảo vệ giáo viên, học sinh.</p>
+        </div>
+
+        <div data-reveal data-reveal-delay="200" class="p-6 rounded-2xl bg-bg-card border border-white/5 hover:border-flame-400/30 transition">
+          <div class="w-12 h-12 rounded-xl bg-flame-500/15 grid place-items-center mb-4">
+            <i class="ph-fill ph-storefront text-flame-400 text-2xl"></i>
+          </div>
+          <h3 class="font-display font-bold text-lg text-white">Cửa hàng · kho nhỏ</h3>
+          <p class="mt-2 text-sm text-slate-400">Bảo vệ hàng hóa, thiết bị — chi phí thấp, không cần cải tạo.</p>
+        </div>
+
+        <div data-reveal data-reveal-delay="300" class="p-6 rounded-2xl bg-bg-card border border-white/5 hover:border-flame-400/30 transition">
+          <div class="w-12 h-12 rounded-xl bg-flame-500/15 grid place-items-center mb-4">
+            <i class="ph-fill ph-buildings text-flame-400 text-2xl"></i>
+          </div>
+          <h3 class="font-display font-bold text-lg text-white">Văn phòng · xưởng</h3>
+          <p class="mt-2 text-sm text-slate-400">Xưởng sản xuất quy mô vừa và nhỏ, văn phòng — giám sát 24/7.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================== COMPARISON ================== -->
+  <section class="py-20 sm:py-28 bg-bg-soft">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-2xl mx-auto text-center" data-reveal>
+        <p class="text-xs font-bold text-flame-400 tracking-widest uppercase">So sánh giải pháp</p>
+        <h2 class="mt-3 font-display text-3xl sm:text-4xl lg:text-5xl font-bold">
+          Vì sao chọn FireGuard AI?
+        </h2>
+      </div>
+
+      <div class="mt-14 overflow-x-auto">
+        <div class="min-w-[640px]">
+          <div class="grid grid-cols-4 gap-4">
+            <!-- Header -->
+            <div></div>
+            <div class="p-5 rounded-t-2xl bg-white/5 text-center">
+              <div class="text-sm text-slate-400">Đầu báo khói</div>
+              <div class="font-display text-xl font-bold text-white mt-1">Truyền thống</div>
+            </div>
+            <div class="p-5 rounded-t-2xl bg-white/5 text-center">
+              <div class="text-sm text-slate-400">Sprinkler</div>
+              <div class="font-display text-xl font-bold text-white mt-1">Thương mại</div>
+            </div>
+            <div class="p-5 rounded-t-2xl bg-gradient-to-br from-flame-500 to-flame-700 text-center">
+              <div class="text-sm text-white/80">Chúng tôi</div>
+              <div class="font-display text-xl font-bold text-white mt-1 flex items-center justify-center gap-1">
+                <i class="ph-fill ph-flame"></i> FireGuard
+              </div>
+            </div>
+
+            <!-- Row: Response time -->
+            <div class="p-5 font-semibold text-slate-300">Thời gian phát hiện</div>
+            <div class="p-5 bg-white/5 text-center text-slate-400">30-60 giây</div>
+            <div class="p-5 bg-white/5 text-center text-slate-400">Theo nhiệt</div>
+            <div class="p-5 bg-flame-500/10 text-center text-flame-300 font-bold border-x border-flame-500/20">&lt; 1 giây</div>
+
+            <!-- Row: Accuracy -->
+            <div class="p-5 font-semibold text-slate-300">Định vị đám cháy</div>
+            <div class="p-5 bg-white/5 text-center text-red-400"><i class="ph-bold ph-x"></i></div>
+            <div class="p-5 bg-white/5 text-center text-red-400"><i class="ph-bold ph-x"></i></div>
+            <div class="p-5 bg-flame-500/10 text-center text-flame-300 font-bold border-x border-flame-500/20">
+              <i class="ph-bold ph-check text-green-400"></i> Chính xác
+            </div>
+
+            <!-- Row: Auto extinguish -->
+            <div class="p-5 font-semibold text-slate-300">Dập cháy tự động</div>
+            <div class="p-5 bg-white/5 text-center text-red-400"><i class="ph-bold ph-x"></i></div>
+            <div class="p-5 bg-white/5 text-center text-yellow-400">Phun toàn bộ</div>
+            <div class="p-5 bg-flame-500/10 text-center text-flame-300 font-bold border-x border-flame-500/20">
+              <i class="ph-bold ph-check text-green-400"></i> Nhắm mục tiêu
+            </div>
+
+            <!-- Row: Mobile app -->
+            <div class="p-5 font-semibold text-slate-300">Điều khiển từ xa</div>
+            <div class="p-5 bg-white/5 text-center text-red-400"><i class="ph-bold ph-x"></i></div>
+            <div class="p-5 bg-white/5 text-center text-red-400"><i class="ph-bold ph-x"></i></div>
+            <div class="p-5 bg-flame-500/10 text-center text-flame-300 font-bold border-x border-flame-500/20">
+              <i class="ph-bold ph-check text-green-400"></i> App Android
+            </div>
+
+            <!-- Row: Cost -->
+            <div class="p-5 font-semibold text-slate-300">Chi phí</div>
+            <div class="p-5 bg-white/5 text-center text-slate-400">500K-2tr</div>
+            <div class="p-5 bg-white/5 text-center text-slate-400">10-50tr</div>
+            <div class="p-5 rounded-b-none bg-flame-500/10 text-center text-flame-300 font-bold border-x border-flame-500/20">
+              &lt; 2 triệu
+            </div>
+
+            <!-- Bottom rounding -->
+            <div></div>
+            <div class="h-4 bg-white/5 rounded-b-2xl"></div>
+            <div class="h-4 bg-white/5 rounded-b-2xl"></div>
+            <div class="h-4 bg-flame-500/10 rounded-b-2xl border-x border-b border-flame-500/20"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================== FAQ ================== -->
+  <section id="faq" class="py-20 sm:py-28">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center" data-reveal>
+        <p class="text-xs font-bold text-flame-400 tracking-widest uppercase">Câu hỏi thường gặp</p>
+        <h2 class="mt-3 font-display text-3xl sm:text-4xl lg:text-5xl font-bold">
+          Bạn cần biết điều gì?
+        </h2>
+      </div>
+
+      <div class="mt-12 space-y-3" data-reveal>
+        <details class="group rounded-2xl bg-bg-card border border-white/5 open:border-flame-500/30 transition-all">
+          <summary class="flex items-center justify-between p-5 cursor-pointer list-none">
+            <span class="font-semibold text-white">Hệ thống có cần internet để hoạt động không?</span>
+            <i class="ph-bold ph-plus text-flame-400 group-open:rotate-45 transition-transform"></i>
+          </summary>
+          <div class="px-5 pb-5 text-slate-400 text-sm leading-relaxed">
+            Không. Toàn bộ AI xử lý tại chỗ trên Raspberry Pi 4, chỉ cần mạng WiFi nội bộ để kết nối camera ESP32 với server. Push notification lên app Android có thể qua cloud (tuỳ chọn) hoặc qua LAN.
+          </div>
+        </details>
+
+        <details class="group rounded-2xl bg-bg-card border border-white/5 open:border-flame-500/30 transition-all">
+          <summary class="flex items-center justify-between p-5 cursor-pointer list-none">
+            <span class="font-semibold text-white">Độ chính xác của AI có cao không?</span>
+            <i class="ph-bold ph-plus text-flame-400 group-open:rotate-45 transition-transform"></i>
+          </summary>
+          <div class="px-5 pb-5 text-slate-400 text-sm leading-relaxed">
+            Mô hình YOLOv8 của chúng tôi đạt mAP 88.2% trên tập validation. Kết hợp với pipeline xác minh 5 tiêu chí + motion check, tỷ lệ cảnh báo sai ở mức rất thấp ngay cả trong điều kiện có đèn LED, ánh nắng chiếu.
+          </div>
+        </details>
+
+        <details class="group rounded-2xl bg-bg-card border border-white/5 open:border-flame-500/30 transition-all">
+          <summary class="flex items-center justify-between p-5 cursor-pointer list-none">
+            <span class="font-semibold text-white">Lắp đặt có phức tạp không?</span>
+            <i class="ph-bold ph-plus text-flame-400 group-open:rotate-45 transition-transform"></i>
+          </summary>
+          <div class="px-5 pb-5 text-slate-400 text-sm leading-relaxed">
+            Không. Toàn bộ thiết bị chỉ cần cắm điện, kết nối WiFi, cài app Android là xong — trong 1-2 giờ. Không phải đục tường đi ống, không cần cải tạo kết cấu.
+          </div>
+        </details>
+
+        <details class="group rounded-2xl bg-bg-card border border-white/5 open:border-flame-500/30 transition-all">
+          <summary class="flex items-center justify-between p-5 cursor-pointer list-none">
+            <span class="font-semibold text-white">Có thể giám sát nhiều phòng không?</span>
+            <i class="ph-bold ph-plus text-flame-400 group-open:rotate-45 transition-transform"></i>
+          </summary>
+          <div class="px-5 pb-5 text-slate-400 text-sm leading-relaxed">
+            Có. Bạn chỉ cần thêm ESP32-CAM cho mỗi phòng cần giám sát. Web dashboard và app Android hỗ trợ quản lý nhiều camera trên cùng một giao diện.
+          </div>
+        </details>
+
+        <details class="group rounded-2xl bg-bg-card border border-white/5 open:border-flame-500/30 transition-all">
+          <summary class="flex items-center justify-between p-5 cursor-pointer list-none">
+            <span class="font-semibold text-white">Nếu mất điện / mất mạng thì sao?</span>
+            <i class="ph-bold ph-plus text-flame-400 group-open:rotate-45 transition-transform"></i>
+          </summary>
+          <div class="px-5 pb-5 text-slate-400 text-sm leading-relaxed">
+            Có thể trang bị thêm UPS mini để duy trì nguồn khi mất điện. Khi mất internet, hệ thống vẫn hoạt động đầy đủ trong mạng LAN (phát hiện, cảnh báo tại chỗ, dập cháy tự động).
+          </div>
+        </details>
+
+        <details class="group rounded-2xl bg-bg-card border border-white/5 open:border-flame-500/30 transition-all">
+          <summary class="flex items-center justify-between p-5 cursor-pointer list-none">
+            <span class="font-semibold text-white">App có trả phí hàng tháng không?</span>
+            <i class="ph-bold ph-plus text-flame-400 group-open:rotate-45 transition-transform"></i>
+          </summary>
+          <div class="px-5 pb-5 text-slate-400 text-sm leading-relaxed">
+            Không. App hoàn toàn miễn phí, không có quảng cáo, không thu phí hàng tháng. Các tính năng cloud nâng cao (nếu có) chỉ tuỳ chọn.
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================== CTA ================== -->
+  <section id="contact" class="py-20 sm:py-28 relative overflow-hidden">
+    <div class="absolute inset-0 -z-10">
+      <div class="absolute inset-0 bg-gradient-to-br from-flame-600/20 via-flame-700/10 to-transparent"></div>
+      <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(240,78,23,0.2),transparent_60%)]"></div>
+    </div>
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="relative rounded-3xl bg-gradient-to-br from-bg-card to-bg-soft border border-flame-500/20 p-8 sm:p-14 text-center overflow-hidden" data-reveal>
+        <!-- Decorative -->
+        <div class="absolute -top-20 -right-20 w-60 h-60 rounded-full bg-flame-500/20 blur-3xl"></div>
+        <div class="absolute -bottom-20 -left-20 w-60 h-60 rounded-full bg-flame-700/20 blur-3xl"></div>
+
+        <div class="relative">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-flame-500/10 border border-flame-500/20 text-xs text-flame-300 font-medium">
+            <i class="ph-fill ph-flame"></i>
+            Bảo vệ ngôi nhà hôm nay
+          </div>
+          <h2 class="mt-5 font-display text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight">
+            Sẵn sàng để ngôi nhà
+            <span class="block text-flame-400">luôn an toàn?</span>
+          </h2>
+          <p class="mt-5 max-w-xl mx-auto text-slate-400 text-base sm:text-lg">
+            Liên hệ ngay để được tư vấn miễn phí và báo giá phù hợp với không gian của bạn.
+          </p>
+
+          <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
+            <a href="tel:+84395940452" class="inline-flex items-center gap-2 px-7 py-4 rounded-full bg-gradient-to-r from-flame-500 to-flame-600 text-white font-semibold shadow-xl shadow-flame-500/30 hover:shadow-flame-500/60 hover:-translate-y-0.5 transition-all">
+              <i class="ph-fill ph-phone"></i>
+              Gọi ngay: 0395 940 452
+            </a>
+            <a href="mailto:20220443@eaut.edu.vn" class="inline-flex items-center gap-2 px-7 py-4 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white font-semibold transition">
+              <i class="ph-fill ph-envelope"></i>
+              Gửi email
+            </a>
+          </div>
+
+          <div class="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-slate-500">
+            <span class="flex items-center gap-1.5"><i class="ph-bold ph-check"></i> Tư vấn miễn phí</span>
+            <span class="flex items-center gap-1.5"><i class="ph-bold ph-check"></i> Lắp đặt tại nhà</span>
+            <span class="flex items-center gap-1.5"><i class="ph-bold ph-check"></i> Bảo hành 12 tháng</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================== FOOTER ================== -->
+  <footer class="py-14 border-t border-white/5 bg-bg-soft">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid md:grid-cols-4 gap-8 mb-10">
+        <!-- Logo column -->
+        <div class="md:col-span-2">
+          <a href="#" class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-flame-500 to-flame-700 grid place-items-center">
+              <i class="ph-fill ph-flame text-white text-xl"></i>
+            </div>
+            <span class="font-display font-bold text-lg">
+              Fire<span class="text-flame-400">Guard</span><span class="text-slate-400 font-normal">.AI</span>
+            </span>
+          </a>
+          <p class="mt-4 text-sm text-slate-400 max-w-sm">
+            Hệ thống phát hiện và chữa cháy thông minh bằng AI — bảo vệ ngôi nhà, văn phòng và xưởng sản xuất của bạn 24/7.
+          </p>
+          <div class="mt-5 flex items-center gap-3">
+            <a href="#" aria-label="Facebook" class="w-9 h-9 rounded-lg bg-white/5 hover:bg-flame-500/20 grid place-items-center transition">
+              <i class="ph-fill ph-facebook-logo text-slate-300"></i>
+            </a>
+            <a href="#" aria-label="GitHub" class="w-9 h-9 rounded-lg bg-white/5 hover:bg-flame-500/20 grid place-items-center transition">
+              <i class="ph-fill ph-github-logo text-slate-300"></i>
+            </a>
+            <a href="#" aria-label="YouTube" class="w-9 h-9 rounded-lg bg-white/5 hover:bg-flame-500/20 grid place-items-center transition">
+              <i class="ph-fill ph-youtube-logo text-slate-300"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Sản phẩm -->
+        <div>
+          <h4 class="font-display font-bold text-white mb-4">Sản phẩm</h4>
+          <ul class="space-y-2.5 text-sm text-slate-400">
+            <li><a href="#features" class="hover:text-white transition">Tính năng</a></li>
+            <li><a href="#how" class="hover:text-white transition">Cách hoạt động</a></li>
+            <li><a href="#product" class="hover:text-white transition">Phần cứng</a></li>
+            <li><a href="#app" class="hover:text-white transition">App Android</a></li>
+          </ul>
+        </div>
+
+        <!-- Liên hệ -->
+        <div>
+          <h4 class="font-display font-bold text-white mb-4">Liên hệ</h4>
+          <ul class="space-y-2.5 text-sm text-slate-400">
+            <li class="flex items-start gap-2">
+              <i class="ph ph-phone text-flame-400 mt-0.5"></i>
+              <span>0395 940 452</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <i class="ph ph-envelope text-flame-400 mt-0.5"></i>
+              <span class="break-all">20220443@eaut.edu.vn</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <i class="ph ph-map-pin text-flame-400 mt-0.5"></i>
+              <span>ĐH Công nghệ Đông Á, Bắc Ninh</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+        <p>© 2025 FireGuard AI. Đồ án sinh viên — ĐH Công nghệ Đông Á.</p>
+        <p>Made with <i class="ph-fill ph-flame text-flame-500"></i> in Vietnam</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Custom JS -->
+  <script src="assets/js/main.js"></script>
+</body>
+</html>

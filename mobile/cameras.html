@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#05070B" />
+  <title>Camera · FireGuard</title>
+  <link rel="icon" type="image/jpeg" href="assets/images/logo.jpg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="stylesheet" href="assets/css/app.css" />
+  <script src="assets/js/app.js"></script>
+  <script>if (!Auth.isLoggedIn()) location.href = 'login.html';</script>
+</head>
+
+<body class="bg-bg-base text-slate-100">
+  <div class="app-container">
+    <!-- Header -->
+    <header class="sticky top-0 z-20 safe-top px-5 pt-3 pb-4 bg-bg-base/80 backdrop-blur-lg">
+      <div class="flex items-center justify-between mb-3">
+        <h1 class="font-display text-2xl font-bold">Camera</h1>
+        <button class="tap w-10 h-10 rounded-xl bg-flame-500/15 grid place-items-center" aria-label="Thêm">
+          <i class="ph-bold ph-plus text-flame-400 text-xl"></i>
+        </button>
+      </div>
+      <!-- Stats pill bar -->
+      <div class="flex items-center gap-2 text-[11px]">
+        <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-500/15 text-green-400 font-semibold">
+          <span class="status-dot status-online" style="width:6px;height:6px"></span>
+          3 ONLINE
+        </div>
+        <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-500/10 text-red-400 font-semibold">
+          <span class="status-dot status-offline" style="width:6px;height:6px"></span>
+          1 OFFLINE
+        </div>
+        <div class="ml-auto text-slate-500">4 khu vực</div>
+      </div>
+    </header>
+
+    <!-- List -->
+    <main class="px-5 pb-32 page space-y-3" id="camList"></main>
+
+    <!-- Bottom tabs -->
+    <nav class="tab-bar safe-bottom px-5 pt-2 pb-3">
+      <div class="flex items-center justify-around">
+        <a href="home.html" class="tap flex flex-col items-center gap-1 px-3 py-1 text-slate-500">
+          <i class="ph-bold ph-house text-xl"></i>
+          <span class="text-[10px] font-semibold">Trang chủ</span>
+        </a>
+        <a href="cameras.html" class="tap flex flex-col items-center gap-1 px-3 py-1 text-flame-400">
+          <i class="ph-fill ph-video-camera text-xl"></i>
+          <span class="text-[10px] font-semibold">Camera</span>
+        </a>
+        <a href="events.html" class="tap flex flex-col items-center gap-1 px-3 py-1 text-slate-500">
+          <i class="ph-bold ph-clock-counter-clockwise text-xl"></i>
+          <span class="text-[10px] font-semibold">Lịch sử</span>
+        </a>
+        <a href="profile.html" class="tap flex flex-col items-center gap-1 px-3 py-1 text-slate-500">
+          <i class="ph-bold ph-user text-xl"></i>
+          <span class="text-[10px] font-semibold">Tôi</span>
+        </a>
+      </div>
+    </nav>
+  </div>
+
+  <script>
+    const list = document.getElementById('camList');
+    MockData.cameras.forEach((cam, i) => {
+      const online = cam.status === 'online';
+      const card = document.createElement('a');
+      card.href = `camera-detail.html?id=${cam.id}`;
+      card.className = 'tap card block overflow-hidden fade-up';
+      card.style.animationDelay = (i * 60) + 'ms';
+
+      const imgWrap = document.createElement('div');
+      imgWrap.className = 'relative aspect-video bg-black';
+      if (online && cam.img) {
+        const img = document.createElement('img');
+        img.src = cam.img; img.alt = ''; img.loading = 'lazy';
+        img.className = 'w-full h-full object-cover';
+        imgWrap.appendChild(img);
+      } else {
+        const ph = document.createElement('div');
+        ph.className = 'absolute inset-0 grid place-items-center';
+        const ic = document.createElement('i');
+        ic.className = 'ph ph-wifi-slash text-4xl text-slate-700';
+        ph.appendChild(ic);
+        imgWrap.appendChild(ph);
+      }
+      const ov = document.createElement('div');
+      ov.className = 'absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30';
+      imgWrap.appendChild(ov);
+
+      // LIVE badge + status
+      const top = document.createElement('div');
+      top.className = 'absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between';
+      const liveBadge = document.createElement('div');
+      liveBadge.className = 'flex items-center gap-1 px-2 py-0.5 rounded bg-black/60 backdrop-blur text-[10px] font-bold';
+      if (online) {
+        const d = document.createElement('span'); d.className = 'w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse';
+        const t = document.createElement('span'); t.className = 'text-white'; t.textContent = 'LIVE';
+        liveBadge.appendChild(d); liveBadge.appendChild(t);
+      } else {
+        const t = document.createElement('span'); t.className = 'text-slate-400'; t.textContent = 'OFFLINE';
+        liveBadge.appendChild(t);
+      }
+      top.appendChild(liveBadge);
+      const fps = document.createElement('span');
+      fps.className = 'text-[10px] font-mono font-bold text-white bg-black/60 backdrop-blur px-2 py-0.5 rounded';
+      fps.textContent = online ? `${cam.fps} FPS` : '—';
+      top.appendChild(fps);
+      imgWrap.appendChild(top);
+
+      // Bottom name
+      const bot = document.createElement('div');
+      bot.className = 'absolute bottom-2.5 left-2.5 right-2.5';
+      const name = document.createElement('div');
+      name.className = 'text-base font-bold text-white';
+      name.textContent = cam.name;
+      const locLine = document.createElement('div');
+      locLine.className = 'text-[11px] text-slate-300';
+      locLine.textContent = `${cam.location} · ${cam.lastSeen}`;
+      bot.appendChild(name); bot.appendChild(locLine);
+      imgWrap.appendChild(bot);
+
+      card.appendChild(imgWrap);
+
+      // Actions row
+      const actions = document.createElement('div');
+      actions.className = 'flex items-center justify-between px-4 py-3';
+      const left = document.createElement('div');
+      left.className = 'flex items-center gap-2 text-[11px]';
+      const dotPill = document.createElement('div');
+      dotPill.className = online ? 'flex items-center gap-1.5 text-green-400' : 'flex items-center gap-1.5 text-red-400';
+      const d2 = document.createElement('span');
+      d2.className = online ? 'status-dot status-online' : 'status-dot status-offline';
+      d2.style.width = '6px'; d2.style.height = '6px';
+      const l2 = document.createElement('span');
+      l2.textContent = online ? 'Online' : 'Offline';
+      dotPill.appendChild(d2); dotPill.appendChild(l2);
+      left.appendChild(dotPill);
+
+      const mkBtn = (iconCls) => {
+        const b = document.createElement('div');
+        b.className = 'tap w-9 h-9 rounded-lg bg-white/5 grid place-items-center';
+        const i = document.createElement('i'); i.className = iconCls + ' text-slate-300';
+        b.appendChild(i);
+        return b;
+      };
+      const right = document.createElement('div');
+      right.className = 'flex items-center gap-2';
+      right.appendChild(mkBtn('ph-bold ph-camera'));
+      right.appendChild(mkBtn('ph-bold ph-gear-six'));
+      right.appendChild(mkBtn('ph-bold ph-caret-right'));
+      actions.appendChild(left); actions.appendChild(right);
+      card.appendChild(actions);
+
+      list.appendChild(card);
+    });
+  </script>
+</body>
+</html>

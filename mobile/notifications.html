@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#05070B" />
+  <title>Thông báo · FireGuard</title>
+  <link rel="icon" type="image/jpeg" href="assets/images/logo.jpg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="stylesheet" href="assets/css/app.css" />
+  <script src="assets/js/app.js"></script>
+  <script>if (!Auth.isLoggedIn()) location.href = 'login.html';</script>
+</head>
+
+<body class="bg-bg-base text-slate-100">
+  <div class="app-container">
+    <header class="sticky top-0 z-20 safe-top px-5 pt-3 pb-3 bg-bg-base/80 backdrop-blur-lg flex items-center gap-3">
+      <a href="home.html" class="tap w-10 h-10 rounded-xl bg-white/5 grid place-items-center">
+        <i class="ph-bold ph-arrow-left text-xl"></i>
+      </a>
+      <div class="flex-1 min-w-0">
+        <h1 class="font-display text-lg font-bold">Thông báo</h1>
+        <p class="text-[11px] text-slate-500 mt-0.5">3 chưa đọc</p>
+      </div>
+      <button class="tap text-xs text-flame-400 font-semibold px-2">Đánh dấu đã đọc</button>
+    </header>
+
+    <main class="px-5 pt-3 pb-28 page">
+      <!-- Featured alert banner -->
+      <div class="mb-5 card p-4 relative overflow-hidden fade-up" style="background: linear-gradient(135deg, rgba(240, 78, 23, 0.15), rgba(139, 20, 4, 0.1)); border-color: rgba(240, 78, 23, 0.25)">
+        <div class="absolute -top-12 -right-12 w-40 h-40 rounded-full bg-flame-500/20 blur-3xl"></div>
+        <div class="relative flex items-start gap-3">
+          <div class="w-11 h-11 rounded-xl bg-flame-500/30 grid place-items-center pulse-ring">
+            <i class="ph-fill ph-fire text-flame-300 text-xl"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] font-bold text-flame-300 tracking-widest uppercase">Cảnh báo · Vừa xong</span>
+            </div>
+            <h2 class="mt-1 font-display text-base font-bold text-white">Phát hiện lửa nhỏ — đã dập tắt</h2>
+            <p class="text-xs text-slate-300 mt-1 leading-relaxed">
+              CAM2 Phòng bếp · Hệ thống đã kích hoạt vòi phun trong 2.3 giây.
+            </p>
+            <div class="mt-3 flex gap-2">
+              <a href="camera-detail.html?id=cam2" class="tap px-3 py-1.5 rounded-lg bg-flame-500/20 text-flame-300 text-xs font-semibold">Xem camera</a>
+              <button class="tap px-3 py-1.5 rounded-lg bg-white/5 text-slate-300 text-xs font-semibold">Tắt còi</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- List -->
+      <div class="card divide-y divide-white/5" id="notifList"></div>
+
+      <div class="mt-8 text-center">
+        <button class="tap text-xs text-slate-500 underline underline-offset-4 decoration-slate-700">
+          Cài đặt thông báo
+        </button>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const iconMap = {
+      alert:   { bg: 'bg-red-500/15',     color: 'text-red-400',    icon: 'ph-fire' },
+      warn:    { bg: 'bg-yellow-500/15',  color: 'text-yellow-400', icon: 'ph-warning' },
+      blocked: { bg: 'bg-purple-500/15',  color: 'text-purple-400', icon: 'ph-shield-check' },
+      info:    { bg: 'bg-cyan-glow/15',   color: 'text-cyan-glow',  icon: 'ph-check-circle' },
+    };
+    const list = document.getElementById('notifList');
+    MockData.notifications.forEach(n => {
+      const m = iconMap[n.type] || iconMap.info;
+      const row = document.createElement('div');
+      row.className = 'flex items-start gap-3 px-4 py-3.5 ' + (n.unread ? 'bg-flame-500/[0.03]' : '');
+      const ic = document.createElement('div');
+      ic.className = `flex-shrink-0 w-10 h-10 rounded-xl ${m.bg} grid place-items-center`;
+      const icEl = document.createElement('i'); icEl.className = `ph-fill ${m.icon} ${m.color} text-lg`;
+      ic.appendChild(icEl);
+      const b = document.createElement('div');
+      b.className = 'flex-1 min-w-0';
+      const tl = document.createElement('div');
+      tl.className = 'flex items-start justify-between gap-2';
+      const title = document.createElement('div');
+      title.className = 'text-sm font-semibold text-white';
+      title.textContent = n.title;
+      tl.appendChild(title);
+      if (n.unread) {
+        const dot = document.createElement('span');
+        dot.className = 'flex-shrink-0 w-2 h-2 rounded-full bg-flame-500 mt-1.5';
+        tl.appendChild(dot);
+      }
+      const body = document.createElement('div');
+      body.className = 'text-xs text-slate-400 mt-1 leading-relaxed';
+      body.textContent = n.body;
+      const meta = document.createElement('div');
+      meta.className = 'mt-1.5 flex items-center gap-2 text-[11px] text-slate-500';
+      const time = document.createElement('span'); time.textContent = n.time;
+      meta.appendChild(time);
+      if (n.cam) {
+        const sep = document.createElement('span'); sep.className = 'w-1 h-1 rounded-full bg-slate-700';
+        const cam = document.createElement('span'); cam.className = 'font-mono font-semibold'; cam.textContent = n.cam;
+        meta.appendChild(sep); meta.appendChild(cam);
+      }
+      b.appendChild(tl); b.appendChild(body); b.appendChild(meta);
+      row.appendChild(ic); row.appendChild(b);
+      list.appendChild(row);
+    });
+  </script>
+</body>
+</html>

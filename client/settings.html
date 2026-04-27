@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cài đặt · FireGuard AI</title>
+  <link rel="icon" type="image/jpeg" href="assets/images/logo.jpg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="stylesheet" href="assets/css/app.css" />
+  <script src="assets/js/app.js"></script>
+  <script src="assets/js/layout.js"></script>
+  <script>if (!Auth.isLoggedIn()) location.href = 'login.html';</script>
+</head>
+<body data-active="settings" class="bg-bg-base text-slate-100">
+
+  <main id="pageMain" class="p-5 sm:p-7 lg:p-8 max-w-[1600px]">
+    <div class="mb-6 fade-in-up">
+      <h2 class="font-display text-2xl sm:text-3xl font-bold">Cài đặt</h2>
+      <p class="mt-1 text-slate-400 text-sm">Quản lý tài khoản, thiết bị và tùy chỉnh hệ thống.</p>
+    </div>
+
+    <div class="grid lg:grid-cols-[220px,1fr] gap-5">
+      <!-- Section nav -->
+      <aside class="lg:sticky lg:top-20 lg:self-start">
+        <nav class="space-y-1 rounded-xl bg-bg-card border border-white/5 p-2">
+          <button class="tab-btn active flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-semibold" data-tab="account"><i class="ph-bold ph-user text-lg"></i> Tài khoản</button>
+          <button class="tab-btn flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-semibold" data-tab="system"><i class="ph-bold ph-sliders text-lg"></i> Chế độ AI</button>
+          <button class="tab-btn flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-semibold" data-tab="notify"><i class="ph-bold ph-bell text-lg"></i> Thông báo</button>
+          <button class="tab-btn flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-semibold" data-tab="devices"><i class="ph-bold ph-cpu text-lg"></i> Thiết bị</button>
+          <button class="tab-btn flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-semibold" data-tab="danger"><i class="ph-bold ph-warning-octagon text-lg"></i> Vùng nguy hiểm</button>
+        </nav>
+      </aside>
+
+      <!-- Panels -->
+      <div class="space-y-5">
+
+        <!-- Account -->
+        <section data-panel="account" class="p-5 sm:p-7 rounded-2xl bg-bg-card border border-white/5">
+          <h3 class="font-display font-bold text-lg mb-5">Thông tin tài khoản</h3>
+          <div class="flex items-start gap-5 mb-6">
+            <div class="relative">
+              <img data-user-avatar src="assets/images/avatar_2.jpg" alt="" class="w-20 h-20 rounded-2xl object-cover ring-2 ring-white/10" />
+              <button class="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-flame-500 grid place-items-center hover:bg-flame-600 transition">
+                <i class="ph-bold ph-camera text-xs text-white"></i>
+              </button>
+            </div>
+            <div>
+              <div data-user-name class="text-lg font-bold">Quốc Anh</div>
+              <div class="text-sm text-slate-400">Chủ hộ · Thành viên từ 03/2026</div>
+              <button class="mt-2 text-xs text-flame-400 hover:text-flame-300 font-semibold">Đổi avatar</button>
+            </div>
+          </div>
+
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 mb-1.5">Họ và tên</label>
+              <input type="text" value="Đỗ Quốc Anh" class="input-base w-full px-4 py-2.5 rounded-lg text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 mb-1.5">Email</label>
+              <input type="email" value="20231996@eaut.edu.vn" class="input-base w-full px-4 py-2.5 rounded-lg text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 mb-1.5">Số điện thoại</label>
+              <input type="tel" value="0385 763 629" class="input-base w-full px-4 py-2.5 rounded-lg text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 mb-1.5">Múi giờ</label>
+              <select class="input-base w-full px-4 py-2.5 rounded-lg text-sm">
+                <option>Asia/Ho_Chi_Minh (UTC+7)</option>
+                <option>Asia/Bangkok (UTC+7)</option>
+              </select>
+            </div>
+          </div>
+          <div class="mt-6 flex gap-2">
+            <button class="btn-primary px-5 py-2.5 rounded-lg text-sm">Lưu thay đổi</button>
+            <button class="px-5 py-2.5 rounded-lg text-sm border border-white/10 hover:bg-white/5">Hủy</button>
+          </div>
+        </section>
+
+        <!-- System mode (AI sensitivity) -->
+        <section data-panel="system" class="p-5 sm:p-7 rounded-2xl bg-bg-card border border-white/5">
+          <h3 class="font-display font-bold text-lg mb-5">Chế độ phát hiện AI</h3>
+          <p class="text-sm text-slate-400 mb-5">Chọn chế độ phù hợp với môi trường của bạn.</p>
+
+          <div class="grid sm:grid-cols-3 gap-3">
+            <button class="mode-btn text-left p-4 rounded-xl border border-white/5 hover:border-flame-400/30 transition" data-mode="safe">
+              <div class="w-10 h-10 rounded-xl bg-green-500/15 grid place-items-center mb-3">
+                <i class="ph-fill ph-shield text-green-400 text-xl"></i>
+              </div>
+              <div class="font-display font-bold text-white">Safe</div>
+              <div class="text-xs text-slate-400 mt-1">Ít cảnh báo sai · chậm hơn</div>
+              <div class="mt-3 text-[10px] font-mono text-slate-500">conf 0.50 · verify 0.45</div>
+            </button>
+            <button class="mode-btn active text-left p-4 rounded-xl border border-flame-400/40 bg-flame-500/5 transition" data-mode="sensitive">
+              <div class="w-10 h-10 rounded-xl bg-flame-500/15 grid place-items-center mb-3">
+                <i class="ph-fill ph-eye text-flame-400 text-xl"></i>
+              </div>
+              <div class="font-display font-bold text-white">Sensitive</div>
+              <div class="text-xs text-slate-400 mt-1">Cân bằng · khuyến nghị</div>
+              <div class="mt-3 text-[10px] font-mono text-flame-400">conf 0.35 · verify 0.28</div>
+            </button>
+            <button class="mode-btn text-left p-4 rounded-xl border border-white/5 hover:border-flame-400/30 transition" data-mode="ultra">
+              <div class="w-10 h-10 rounded-xl bg-red-500/15 grid place-items-center mb-3">
+                <i class="ph-fill ph-lightning text-red-400 text-xl"></i>
+              </div>
+              <div class="font-display font-bold text-white">Ultra Sensitive</div>
+              <div class="text-xs text-slate-400 mt-1">Rất nhạy · có thể báo sai</div>
+              <div class="mt-3 text-[10px] font-mono text-slate-500">conf 0.20 · verify 0.18</div>
+            </button>
+          </div>
+
+          <div class="mt-6 pt-6 border-t border-white/5 space-y-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="text-sm font-semibold">SAHI (phát hiện lửa nhỏ)</div>
+                <div class="text-xs text-slate-400 mt-0.5">Chậm hơn ~2x nhưng bắt được lửa nhỏ</div>
+              </div>
+              <label class="switch"><input type="checkbox" checked /><span class="slider"></span></label>
+            </div>
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="text-sm font-semibold">Motion check</div>
+                <div class="text-xs text-slate-400 mt-0.5">Phân biệt lửa thật với vật tĩnh</div>
+              </div>
+              <label class="switch"><input type="checkbox" checked /><span class="slider"></span></label>
+            </div>
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="text-sm font-semibold">Confirm frames</div>
+                <div class="text-xs text-slate-400 mt-0.5">Số frame liên tiếp cần xác nhận</div>
+              </div>
+              <select class="input-base px-3 py-1.5 rounded-lg text-sm">
+                <option>2 frame</option>
+                <option selected>3 frame</option>
+                <option>5 frame</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <!-- Notifications -->
+        <section data-panel="notify" class="p-5 sm:p-7 rounded-2xl bg-bg-card border border-white/5">
+          <h3 class="font-display font-bold text-lg mb-5">Thông báo</h3>
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="text-sm font-semibold">Push notification (app)</div>
+                <div class="text-xs text-slate-400 mt-0.5">Gửi đến điện thoại qua FCM</div>
+              </div>
+              <label class="switch"><input type="checkbox" checked /><span class="slider"></span></label>
+            </div>
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="text-sm font-semibold">Email cảnh báo</div>
+                <div class="text-xs text-slate-400 mt-0.5">Gửi tới admin@fireguard.ai</div>
+              </div>
+              <label class="switch"><input type="checkbox" checked /><span class="slider"></span></label>
+            </div>
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="text-sm font-semibold">SMS khẩn cấp</div>
+                <div class="text-xs text-slate-400 mt-0.5">Chỉ cho cảnh báo cháy (có phí)</div>
+              </div>
+              <label class="switch"><input type="checkbox" /><span class="slider"></span></label>
+            </div>
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="text-sm font-semibold">Chuông báo động</div>
+                <div class="text-xs text-slate-400 mt-0.5">Còi tại thiết bị khi phát hiện</div>
+              </div>
+              <label class="switch"><input type="checkbox" checked /><span class="slider"></span></label>
+            </div>
+          </div>
+        </section>
+
+        <!-- Danger zone -->
+        <section data-panel="danger" class="p-5 sm:p-7 rounded-2xl bg-red-500/5 border border-red-500/20">
+          <h3 class="font-display font-bold text-lg mb-2 text-red-400 flex items-center gap-2">
+            <i class="ph-fill ph-warning-octagon"></i> Vùng nguy hiểm
+          </h3>
+          <p class="text-sm text-slate-400 mb-5">Các hành động sau không thể hoàn tác.</p>
+          <div class="space-y-3">
+            <button class="w-full text-left p-4 rounded-xl border border-white/5 hover:bg-white/5 transition flex items-center justify-between">
+              <div>
+                <div class="text-sm font-semibold text-slate-200">Xóa tất cả lịch sử sự kiện</div>
+                <div class="text-xs text-slate-400 mt-0.5">Xóa vĩnh viễn 247 bản ghi</div>
+              </div>
+              <i class="ph-bold ph-trash text-slate-500"></i>
+            </button>
+            <button class="w-full text-left p-4 rounded-xl border border-red-500/20 hover:bg-red-500/10 transition flex items-center justify-between">
+              <div>
+                <div class="text-sm font-semibold text-red-400">Xóa tài khoản</div>
+                <div class="text-xs text-slate-400 mt-0.5">Tài khoản và dữ liệu sẽ bị xóa vĩnh viễn</div>
+              </div>
+              <i class="ph-bold ph-trash text-red-400"></i>
+            </button>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </main>
+
+  <script>
+    Auth.requireAuth();
+    FG.renderShell({ pageTitle: 'Cài đặt', breadcrumb: 'Tài khoản' });
+
+    // Tab nav highlight + scroll to section
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    tabBtns.forEach(b => {
+      b.addEventListener('click', () => {
+        tabBtns.forEach(x => x.classList.remove('active'));
+        b.classList.add('active');
+        const tab = b.dataset.tab;
+        const panel = document.querySelector(`[data-panel="${tab}"]`);
+        if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    // Mode selection
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.mode-btn').forEach(x => {
+          x.classList.remove('active');
+          x.classList.remove('border-flame-400/40', 'bg-flame-500/5');
+          x.classList.add('border-white/5');
+        });
+        btn.classList.add('active');
+        btn.classList.add('border-flame-400/40', 'bg-flame-500/5');
+        btn.classList.remove('border-white/5');
+        toast('Đã chuyển chế độ: ' + btn.dataset.mode.toUpperCase(), 'success');
+      });
+    });
+
+    // Toggle switch styles
+    const style = document.createElement('style');
+    style.textContent = `
+      .tab-btn { background: transparent; color: #94A3B8; }
+      .tab-btn:hover { background: rgba(255,255,255,0.04); color: #E2E8F0; }
+      .tab-btn.active { background: rgba(240, 78, 23, 0.12); color: #FF9B66; }
+
+      .switch { position: relative; display: inline-block; width: 42px; height: 24px; flex-shrink: 0; }
+      .switch input { opacity: 0; width: 0; height: 0; }
+      .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255,255,255,0.1); transition: 0.3s; border-radius: 24px; }
+      .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: #94A3B8; transition: 0.3s; border-radius: 50%; }
+      input:checked + .slider { background: linear-gradient(135deg, #F04E17, #D13904); }
+      input:checked + .slider:before { transform: translateX(18px); background-color: white; }
+    `;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>

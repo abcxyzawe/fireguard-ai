@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>FireGuard Mobile</title>
+  <script>
+    try {
+      const s = localStorage.getItem('fireguard_mobile_session');
+      location.replace(s ? 'home.html' : 'onboarding.html');
+    } catch (e) { location.replace('onboarding.html'); }
+  </script>
+</head>
+<body></body>
+</html>

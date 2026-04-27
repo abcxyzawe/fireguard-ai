@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Notification icon: must be white silhouette on transparent bg.
+     Android system tints it based on notification color. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M12,2 C13.5,4.5 16,6 16,9.5 C16,12 14.5,13.5 12,13.5 C9.5,13.5 8,12 8,9.5 C8,7.5 9,6 10.5,5 C10,6.5 11,7 11.5,7 C12,7 12,6.5 11.5,5.5 C10.8,4 11.3,2.8 12,2 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M12,13 C13,14.5 15,15.5 15,18 C15,20 13.5,21 12,21 C10.5,21 9,20 9,18 C9,16.5 10,15.5 11,14.5 C10.8,15.8 11.3,16.2 11.6,16.2 C11.9,16.2 11.9,15.8 11.6,15.2 C11.2,14.3 11.5,13.7 12,13 Z" />
+
+</vector>

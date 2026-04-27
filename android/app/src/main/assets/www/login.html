@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#05070B" />
+  <title>Đăng nhập · FireGuard</title>
+  <link rel="icon" type="image/jpeg" href="assets/images/logo.jpg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="stylesheet" href="assets/css/app.css" />
+  <script src="assets/js/app.js"></script>
+</head>
+
+<body class="bg-bg-base text-slate-100">
+  <div class="app-container min-h-screen flex flex-col">
+
+    <!-- Top hero image -->
+    <div class="relative h-[38vh] min-h-[240px] overflow-hidden fade-up">
+      <img src="assets/images/hero.jpg" alt="" class="w-full h-full object-cover" />
+      <div class="absolute inset-0 bg-gradient-to-b from-transparent via-bg-base/30 to-bg-base"></div>
+      <div class="absolute top-6 left-6 flex items-center gap-2.5">
+        <div class="w-10 h-10 rounded-xl overflow-hidden ring-1 ring-flame-500/30">
+          <img src="assets/images/logo.jpg" alt="FireGuard" class="w-full h-full object-cover" />
+        </div>
+        <span class="font-display font-bold">Fire<span class="text-flame-400">Guard</span></span>
+      </div>
+    </div>
+
+    <!-- Form -->
+    <div class="flex-1 flex flex-col px-6 pb-8">
+      <div class="fade-up" style="animation-delay:100ms">
+        <h1 class="font-display text-3xl font-bold">Chào mừng trở lại</h1>
+        <p class="mt-1.5 text-slate-400 text-[15px]">Đăng nhập để giám sát nhà của bạn.</p>
+      </div>
+
+      <form id="loginForm" class="mt-7 space-y-3 fade-up" style="animation-delay:200ms" novalidate>
+        <div class="relative">
+          <i class="ph-bold ph-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-lg"></i>
+          <input type="email" name="email" value="admin@fireguard.ai" class="input w-full pl-11" placeholder="Email" required />
+        </div>
+        <div class="relative">
+          <i class="ph-bold ph-lock-key absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-lg"></i>
+          <input type="password" name="password" value="demo1234" class="input w-full pl-11 pr-11" placeholder="Mật khẩu" required />
+          <button type="button" id="togglePwd" class="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 grid place-items-center text-slate-500" aria-label="Hiện">
+            <i class="ph-bold ph-eye text-lg"></i>
+          </button>
+        </div>
+
+        <div class="flex items-center justify-between pt-1">
+          <label class="flex items-center gap-2 text-sm text-slate-300">
+            <input type="checkbox" checked class="w-4 h-4 rounded bg-white/5 border-white/20" />
+            Ghi nhớ
+          </label>
+          <a href="#" class="text-sm text-flame-400 font-semibold">Quên mật khẩu?</a>
+        </div>
+
+        <button type="submit" class="tap btn-primary w-full flex items-center justify-center gap-2 mt-2">
+          <span>Đăng nhập</span>
+          <i class="ph-bold ph-arrow-right"></i>
+        </button>
+      </form>
+
+      <div class="relative my-5">
+        <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-white/10"></div></div>
+        <div class="relative flex justify-center text-[11px]">
+          <span class="bg-bg-base px-3 text-slate-500 uppercase tracking-wider">Hoặc</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 fade-up" style="animation-delay:300ms">
+        <button class="tap btn-secondary flex items-center justify-center gap-2">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M21.8 10.2h-9.4v3.8h5.4c-.5 2.5-2.7 3.9-5.4 3.9-3.3 0-6-2.7-6-6s2.7-6 6-6c1.4 0 2.7.5 3.7 1.3L19.1 4C17.2 2.4 14.9 1.4 12.4 1.4 6.4 1.4 1.4 6.4 1.4 12.4s5 11 11 11c5.5 0 10-4 10-11 0-.7-.1-1.4-.6-2.2z"/></svg>
+          <span>Google</span>
+        </button>
+        <button class="tap btn-secondary flex items-center justify-center gap-2">
+          <i class="ph-fill ph-fingerprint text-lg text-flame-400"></i>
+          <span>Sinh trắc</span>
+        </button>
+      </div>
+
+      <p class="mt-auto pt-6 text-center text-[13px] text-slate-400">
+        Chưa có tài khoản? <a href="#" class="text-flame-400 font-semibold">Đăng ký</a>
+      </p>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('togglePwd').addEventListener('click', () => {
+      const inp = document.querySelector('input[name=password]');
+      const icon = document.querySelector('#togglePwd i');
+      if (inp.type === 'password') { inp.type = 'text'; icon.className = 'ph-bold ph-eye-slash text-lg'; }
+      else { inp.type = 'password'; icon.className = 'ph-bold ph-eye text-lg'; }
+    });
+
+    document.getElementById('loginForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const btn = e.target.querySelector('button[type=submit]');
+      btn.disabled = true;
+      btn.textContent = '';
+      const i = document.createElement('i'); i.className = 'ph-bold ph-spinner animate-spin text-lg';
+      const s = document.createElement('span'); s.textContent = 'Đang đăng nhập...';
+      btn.appendChild(i); btn.appendChild(s);
+      haptic(15);
+      setTimeout(() => {
+        Auth.login({ name: 'Quốc Anh', email: e.target.email.value, avatar: 'assets/images/avatar.jpg' });
+        location.href = 'home.html';
+      }, 700);
+    });
+  </script>
+</body>
+</html>

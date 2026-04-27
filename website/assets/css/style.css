@@ -1,0 +1,81 @@
+/* FireGuard AI - Custom Styles */
+
+html {
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  overflow-x: hidden;
+  background: #05070B;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #05070B;
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #F04E17, #D13904);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #FF6F2C, #F04E17);
+}
+
+/* Reveal animation */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[data-reveal].revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Nav scrolled */
+#nav.scrolled,
+#nav.menu-open {
+  background: rgba(5, 7, 11, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Summary arrow removal */
+details summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Floating animation variations */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+/* Prevent text wrapping issues on mobile */
+@media (max-width: 640px) {
+  h1, h2, h3 {
+    word-break: keep-all;
+  }
+}
+
+/* Improved focus states for accessibility */
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid #FF6F2C;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Better image rendering */
+img {
+  -webkit-user-drag: none;
+  user-select: none;
+}

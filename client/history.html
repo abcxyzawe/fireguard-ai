@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lịch sử · FireGuard AI</title>
+  <link rel="icon" type="image/jpeg" href="assets/images/logo.jpg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="stylesheet" href="assets/css/app.css" />
+  <script src="assets/js/app.js"></script>
+  <script src="assets/js/layout.js"></script>
+  <script>if (!Auth.isLoggedIn()) location.href = 'login.html';</script>
+</head>
+<body data-active="history" class="bg-bg-base text-slate-100">
+
+  <main id="pageMain" class="p-5 sm:p-7 lg:p-8 max-w-[1600px]">
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-6 fade-in-up">
+      <div>
+        <h2 class="font-display text-2xl sm:text-3xl font-bold">Lịch sử sự kiện</h2>
+        <p class="mt-1 text-slate-400 text-sm">Tất cả phát hiện, cảnh báo và hoạt động hệ thống.</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <button class="px-3 py-2 rounded-lg bg-bg-card border border-white/5 hover:bg-bg-hover text-sm flex items-center gap-2">
+          <i class="ph-bold ph-download-simple"></i>
+          Xuất CSV
+        </button>
+      </div>
+    </div>
+
+    <!-- Stats strip -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+      <div class="p-4 rounded-xl bg-bg-card border border-white/5">
+        <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Tổng sự kiện</div>
+        <div class="mt-1 font-display text-2xl font-bold">247</div>
+      </div>
+      <div class="p-4 rounded-xl bg-red-500/5 border border-red-500/20">
+        <div class="text-[10px] font-bold text-red-400 uppercase tracking-wider">Cảnh báo cháy</div>
+        <div class="mt-1 font-display text-2xl font-bold text-red-400">3</div>
+      </div>
+      <div class="p-4 rounded-xl bg-purple-500/5 border border-purple-500/20">
+        <div class="text-[10px] font-bold text-purple-400 uppercase tracking-wider">Đã chặn báo sai</div>
+        <div class="mt-1 font-display text-2xl font-bold text-purple-400">42</div>
+      </div>
+      <div class="p-4 rounded-xl bg-cyan-glow/5 border border-cyan-glow/20">
+        <div class="text-[10px] font-bold text-cyan-glow uppercase tracking-wider">Hoạt động HT</div>
+        <div class="mt-1 font-display text-2xl font-bold text-cyan-glow">202</div>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="flex flex-wrap items-center gap-2 mb-5">
+      <button class="filter-btn active px-3 py-1.5 rounded-full text-xs font-semibold" data-filter="all">Tất cả</button>
+      <button class="filter-btn px-3 py-1.5 rounded-full text-xs font-semibold" data-filter="alert">🔥 Cháy</button>
+      <button class="filter-btn px-3 py-1.5 rounded-full text-xs font-semibold" data-filter="blocked">🛡️ Đã chặn</button>
+      <button class="filter-btn px-3 py-1.5 rounded-full text-xs font-semibold" data-filter="warn">⚠️ Cảnh báo</button>
+      <button class="filter-btn px-3 py-1.5 rounded-full text-xs font-semibold" data-filter="info">ℹ️ Hệ thống</button>
+      <div class="ml-auto flex items-center gap-2">
+        <select class="input-base px-3 py-1.5 rounded-lg text-xs">
+          <option>7 ngày qua</option>
+          <option>30 ngày qua</option>
+          <option>90 ngày qua</option>
+          <option>Tất cả thời gian</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Events list -->
+    <div class="rounded-2xl bg-bg-card border border-white/5 overflow-hidden">
+      <div id="eventList"></div>
+    </div>
+  </main>
+
+  <script>
+    Auth.requireAuth();
+    FG.renderShell({ pageTitle: 'Lịch sử', breadcrumb: 'Giám sát' });
+
+    // Extended mock events
+    const events = [
+      { type: 'alert', title: 'Phát hiện lửa — tự động dập tắt', desc: 'Ngọn lửa nhỏ tại bếp, thời gian dập 2.3s', time: '2 ngày trước, 19:45:12', cam: 'cam2', conf: 96.3 },
+      { type: 'blocked', title: 'Chặn cảnh báo sai (đèn LED)', desc: 'AI phát hiện vật thể tĩnh — không phải lửa', time: 'Hôm nay, 12:47:08', cam: 'cam2', conf: 42.1 },
+      { type: 'blocked', title: 'Chặn cảnh báo sai (ánh nắng)', desc: 'Verify score quá thấp (0.18)', time: 'Hôm qua, 16:32:44', cam: 'cam1', conf: 38.4 },
+      { type: 'warn', title: 'CAM4 mất kết nối', desc: 'Không nhận được ảnh trong 60 giây', time: 'Hôm nay, 10:23:55', cam: 'cam4' },
+      { type: 'info', title: 'Hệ thống khởi động', desc: 'Tất cả dịch vụ đã sẵn sàng', time: 'Hôm nay, 08:00:01', cam: null },
+      { type: 'info', title: 'Phát hiện chuyển động', desc: 'Chuyển động trong vùng giám sát', time: 'Hôm nay, 11:15:30', cam: 'cam1' },
+      { type: 'info', title: 'Hệ thống tự kiểm tra', desc: 'Kiểm tra sức khỏe servo + bơm', time: 'Hôm nay, 14:00:00', cam: null },
+      { type: 'blocked', title: 'Chặn cảnh báo sai (phản chiếu)', desc: 'Motion check phát hiện vật thể tĩnh', time: 'Hôm qua, 09:15:22', cam: 'cam3', conf: 35.2 },
+      { type: 'alert', title: 'Phát hiện lửa nhỏ — xác nhận bởi SAHI', desc: 'Sử dụng slicing inference — conf 82.1%', time: '5 ngày trước, 21:12:30', cam: 'cam2', conf: 82.1 },
+      { type: 'info', title: 'Cập nhật model AI', desc: 'YOLOv8s v4 — mAP 88.2%', time: '3 ngày trước, 03:30:00', cam: null },
+    ];
+
+    const colors = {
+      alert: { bg: 'bg-red-500/15', text: 'text-red-400', label: 'CHÁY', labelBg: 'bg-red-500/20' },
+      warn: { bg: 'bg-yellow-500/15', text: 'text-yellow-400', label: 'CẢNH BÁO', labelBg: 'bg-yellow-500/20' },
+      blocked: { bg: 'bg-purple-500/15', text: 'text-purple-400', label: 'ĐÃ CHẶN', labelBg: 'bg-purple-500/20' },
+      info: { bg: 'bg-cyan-glow/15', text: 'text-cyan-glow', label: 'HỆ THỐNG', labelBg: 'bg-cyan-glow/20' },
+    };
+    const icons = {
+      alert: 'ph-fire',
+      warn: 'ph-warning',
+      blocked: 'ph-shield-check',
+      info: 'ph-info',
+    };
+
+    function buildEventRow(ev, index) {
+      const c = colors[ev.type];
+      const ic = icons[ev.type];
+      const row = document.createElement('div');
+      row.className = 'group flex items-start gap-3 sm:gap-4 px-4 sm:px-5 py-4 border-b border-white/5 last:border-b-0 hover:bg-white/[0.02] transition cursor-pointer';
+      row.dataset.type = ev.type;
+
+      // Icon
+      const iconBox = document.createElement('div');
+      iconBox.className = `flex-shrink-0 w-10 h-10 sm:w-11 sm:h-11 rounded-xl grid place-items-center ${c.bg}`;
+      const iconEl = document.createElement('i');
+      iconEl.className = `ph-fill ${ic} ${c.text} text-lg sm:text-xl`;
+      iconBox.appendChild(iconEl);
+
+      // Body (stretches, wraps meta below on mobile)
+      const body = document.createElement('div');
+      body.className = 'flex-1 min-w-0';
+
+      const titleRow = document.createElement('div');
+      titleRow.className = 'flex items-center gap-2 flex-wrap';
+      const title = document.createElement('span');
+      title.className = 'text-sm font-semibold text-white';
+      title.textContent = ev.title;
+      titleRow.appendChild(title);
+      const label = document.createElement('span');
+      label.className = `text-[9px] px-1.5 py-0.5 rounded-full font-bold ${c.labelBg} ${c.text}`;
+      label.textContent = c.label;
+      titleRow.appendChild(label);
+      if (ev.conf) {
+        const confTag = document.createElement('span');
+        confTag.className = 'text-[10px] font-mono text-slate-400';
+        confTag.textContent = `conf ${ev.conf}%`;
+        titleRow.appendChild(confTag);
+      }
+      body.appendChild(titleRow);
+
+      const desc = document.createElement('div');
+      desc.className = 'text-xs text-slate-400 mt-1';
+      desc.textContent = ev.desc;
+      body.appendChild(desc);
+
+      // Meta row (wraps below on mobile, right-aligned on desktop)
+      const meta = document.createElement('div');
+      meta.className = 'mt-2 flex flex-wrap items-center gap-2 text-[11px] text-slate-500';
+      const time = document.createElement('span');
+      time.className = 'font-mono';
+      time.textContent = ev.time;
+      meta.appendChild(time);
+      if (ev.cam) {
+        const dotSep = document.createElement('span');
+        dotSep.className = 'w-1 h-1 rounded-full bg-slate-700';
+        meta.appendChild(dotSep);
+        const cam = document.createElement('span');
+        cam.className = 'px-1.5 py-0.5 rounded bg-white/5 font-mono font-semibold text-slate-300';
+        cam.textContent = ev.cam.toUpperCase();
+        meta.appendChild(cam);
+      }
+      body.appendChild(meta);
+
+      // Chevron on right
+      const chevron = document.createElement('i');
+      chevron.className = 'ph-bold ph-caret-right text-slate-500 group-hover:text-flame-400 transition self-center flex-shrink-0';
+
+      row.appendChild(iconBox);
+      row.appendChild(body);
+      row.appendChild(chevron);
+      return row;
+    }
+
+    const list = document.getElementById('eventList');
+    events.forEach((ev, i) => list.appendChild(buildEventRow(ev, i)));
+
+    // Filter
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const f = btn.dataset.filter;
+        Array.from(list.children).forEach(row => {
+          const match = f === 'all' || row.dataset.type === f;
+          row.style.display = match ? '' : 'none';
+        });
+      });
+    });
+
+    // Inline style for filter btn
+    const style = document.createElement('style');
+    style.textContent = `
+      .filter-btn { background: rgba(255,255,255,0.05); color: #94A3B8; }
+      .filter-btn:hover { background: rgba(255,255,255,0.08); color: #E2E8F0; }
+      .filter-btn.active { background: linear-gradient(135deg, #F04E17, #D13904); color: white; box-shadow: 0 6px 18px -6px rgba(240,78,23,0.5); }
+    `;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>

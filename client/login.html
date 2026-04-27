@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Đăng nhập · FireGuard AI</title>
+  <link rel="icon" type="image/jpeg" href="assets/images/logo.jpg" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="stylesheet" href="assets/css/app.css" />
+  <script src="assets/js/app.js"></script>
+</head>
+
+<body class="bg-bg-base text-slate-100 min-h-screen overflow-hidden">
+
+  <div class="grid lg:grid-cols-2 min-h-screen">
+
+    <!-- ============ LEFT: Art side (hidden on mobile) ============ -->
+    <div class="relative hidden lg:block overflow-hidden">
+      <!-- Background image -->
+      <img src="assets/images/login_art.jpg" alt="" class="absolute inset-0 w-full h-full object-cover" />
+      <!-- Gradient overlays -->
+      <div class="absolute inset-0 bg-gradient-to-br from-bg-base/70 via-bg-base/30 to-flame-900/40"></div>
+      <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(240,78,23,0.2),transparent_60%)]"></div>
+
+      <!-- Grid pattern -->
+      <div class="absolute inset-0 opacity-[0.05] bg-[linear-gradient(rgba(255,255,255,0.7)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.7)_1px,transparent_1px)] bg-[size:64px_64px]"></div>
+
+      <!-- Content -->
+      <div class="relative h-full flex flex-col p-10 xl:p-14">
+        <!-- Top: logo -->
+        <a href="../website/index.html" class="inline-flex items-center gap-2.5 group w-fit">
+          <div class="w-11 h-11 rounded-xl overflow-hidden ring-1 ring-flame-500/30 shadow-lg">
+            <img src="assets/images/logo.jpg" alt="FireGuard" class="w-full h-full object-cover" />
+          </div>
+          <span class="font-display font-bold text-xl tracking-tight">
+            Fire<span class="text-flame-400">Guard</span><span class="text-slate-400 font-normal">.AI</span>
+          </span>
+        </a>
+
+        <!-- Middle: quote -->
+        <div class="flex-1 flex items-end">
+          <div class="slide-in-left">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-flame-500/10 border border-flame-500/30 backdrop-blur-sm text-xs text-flame-300 font-medium mb-5">
+              <span class="relative flex w-2 h-2">
+                <span class="absolute inset-0 rounded-full bg-flame-400 animate-ping opacity-75"></span>
+                <span class="relative rounded-full bg-flame-400 w-2 h-2"></span>
+              </span>
+              Hệ thống đang giám sát
+            </div>
+            <h2 class="font-display text-4xl xl:text-5xl font-bold leading-tight">
+              Ngôi nhà của bạn <br/>
+              <span class="bg-gradient-to-r from-flame-300 to-ember-500 bg-clip-text text-transparent">
+                luôn được bảo vệ
+              </span>
+            </h2>
+            <p class="mt-5 text-slate-300 text-lg max-w-md leading-relaxed">
+              AI thị giác máy phát hiện lửa và khói trong thời gian thực — tự động dập cháy ngay cả khi bạn đi vắng.
+            </p>
+
+            <!-- Mini stats -->
+            <div class="mt-8 flex gap-6 text-sm">
+              <div>
+                <div class="font-display text-2xl font-bold text-white">88.2<span class="text-flame-400">%</span></div>
+                <div class="text-slate-400 text-xs mt-0.5">Độ chính xác</div>
+              </div>
+              <div class="w-px bg-white/10"></div>
+              <div>
+                <div class="font-display text-2xl font-bold text-white">&lt;1<span class="text-flame-400">s</span></div>
+                <div class="text-slate-400 text-xs mt-0.5">Phản ứng</div>
+              </div>
+              <div class="w-px bg-white/10"></div>
+              <div>
+                <div class="font-display text-2xl font-bold text-white">24/7</div>
+                <div class="text-slate-400 text-xs mt-0.5">Giám sát</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom: copyright -->
+        <div class="text-xs text-slate-500 mt-6">© 2026 FireGuard AI. Made with <i class="ph-fill ph-flame text-flame-500"></i> in Vietnam.</div>
+      </div>
+    </div>
+
+    <!-- ============ RIGHT: Form side ============ -->
+    <div class="relative flex items-center justify-center p-6 sm:p-10 lg:p-14">
+      <!-- Mobile background subtle -->
+      <div class="lg:hidden absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,rgba(240,78,23,0.15),transparent_60%)]"></div>
+
+      <!-- Mobile logo top -->
+      <a href="../website/index.html" class="lg:hidden absolute top-6 left-6 flex items-center gap-2">
+        <div class="w-9 h-9 rounded-xl overflow-hidden">
+          <img src="assets/images/logo.jpg" alt="FireGuard" class="w-full h-full object-cover" />
+        </div>
+        <span class="font-display font-bold text-base">Fire<span class="text-flame-400">Guard</span></span>
+      </a>
+
+      <div class="w-full max-w-md fade-in-up">
+        <!-- Heading -->
+        <div class="mb-8">
+          <h1 class="font-display text-3xl sm:text-4xl font-bold tracking-tight">Chào mừng trở lại 👋</h1>
+          <p class="mt-2 text-slate-400">Đăng nhập để kiểm soát hệ thống FireGuard của bạn.</p>
+        </div>
+
+        <!-- Form -->
+        <form id="loginForm" class="space-y-5" novalidate>
+          <!-- Email -->
+          <div>
+            <label class="block text-sm font-medium text-slate-300 mb-1.5">Email</label>
+            <div class="relative">
+              <i class="ph-bold ph-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-lg"></i>
+              <input type="email" name="email" autocomplete="email" required
+                     placeholder="you@example.com"
+                     value="admin@fireguard.ai"
+                     class="input-base w-full pl-11 pr-4 py-3.5 rounded-xl text-sm" />
+            </div>
+          </div>
+
+          <!-- Password -->
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <label class="block text-sm font-medium text-slate-300">Mật khẩu</label>
+              <a href="#" class="text-xs text-flame-400 hover:text-flame-300">Quên mật khẩu?</a>
+            </div>
+            <div class="relative">
+              <i class="ph-bold ph-lock-key absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-lg"></i>
+              <input type="password" name="password" autocomplete="current-password" required
+                     placeholder="••••••••"
+                     value="demo1234"
+                     class="input-base w-full pl-11 pr-12 py-3.5 rounded-xl text-sm" />
+              <button type="button" id="togglePwd" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition" aria-label="Hiện mật khẩu">
+                <i class="ph-bold ph-eye text-lg"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Remember + submit -->
+          <div class="flex items-center justify-between">
+            <label class="flex items-center gap-2 text-sm text-slate-300 cursor-pointer">
+              <input type="checkbox" name="remember" class="w-4 h-4 rounded bg-white/5 border-white/20 text-flame-500 focus:ring-flame-500 focus:ring-offset-0" checked />
+              Ghi nhớ đăng nhập
+            </label>
+          </div>
+
+          <!-- Submit button -->
+          <button type="submit" class="btn-primary w-full py-3.5 rounded-xl flex items-center justify-center gap-2 text-sm">
+            <span>Đăng nhập</span>
+            <i class="ph-bold ph-arrow-right"></i>
+          </button>
+
+          <!-- Divider -->
+          <div class="relative py-2">
+            <div class="absolute inset-0 flex items-center">
+              <div class="w-full border-t border-white/10"></div>
+            </div>
+            <div class="relative flex justify-center text-xs">
+              <span class="bg-bg-base px-3 text-slate-500">hoặc tiếp tục với</span>
+            </div>
+          </div>
+
+          <!-- Social -->
+          <div class="grid grid-cols-2 gap-3">
+            <button type="button" class="flex items-center justify-center gap-2 py-3 rounded-xl border border-white/10 hover:bg-white/5 transition text-sm font-medium">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M21.8 10.2h-9.4v3.8h5.4c-.5 2.5-2.7 3.9-5.4 3.9-3.3 0-6-2.7-6-6s2.7-6 6-6c1.4 0 2.7.5 3.7 1.3L19.1 4C17.2 2.4 14.9 1.4 12.4 1.4 6.4 1.4 1.4 6.4 1.4 12.4s5 11 11 11c5.5 0 10-4 10-11 0-.7-.1-1.4-.6-2.2z"/></svg>
+              Google
+            </button>
+            <button type="button" class="flex items-center justify-center gap-2 py-3 rounded-xl border border-white/10 hover:bg-white/5 transition text-sm font-medium">
+              <i class="ph-fill ph-apple-logo text-lg"></i>
+              Apple
+            </button>
+          </div>
+        </form>
+
+        <!-- Footer link -->
+        <p class="mt-8 text-center text-sm text-slate-400">
+          Chưa có tài khoản?
+          <a href="signup.html" class="text-flame-400 font-semibold hover:text-flame-300">Đăng ký ngay</a>
+        </p>
+
+        <!-- Demo note -->
+        <div class="mt-6 p-3 rounded-xl bg-cyan-glow/5 border border-cyan-glow/20 flex items-start gap-2">
+          <i class="ph-fill ph-info text-cyan-glow mt-0.5"></i>
+          <p class="text-xs text-slate-400">
+            <span class="text-cyan-glow font-semibold">Demo mode:</span>
+            Dùng bất kỳ email/mật khẩu nào (đã điền sẵn) để trải nghiệm.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Toggle password visibility
+    const toggleBtn = document.getElementById('togglePwd');
+    const pwdInput = document.querySelector('input[name=password]');
+    toggleBtn.addEventListener('click', () => {
+      const type = pwdInput.type === 'password' ? 'text' : 'password';
+      pwdInput.type = type;
+      const icon = toggleBtn.querySelector('i');
+      icon.classList.toggle('ph-eye');
+      icon.classList.toggle('ph-eye-slash');
+    });
+
+    // Form submit (mock)
+    document.getElementById('loginForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const email = form.email.value.trim();
+      const password = form.password.value;
+      if (!email || !password) {
+        toast('Vui lòng nhập đủ email và mật khẩu', 'warn');
+        return;
+      }
+      const submitBtn = form.querySelector('button[type=submit]');
+      const originalHTML = submitBtn.innerHTML;
+      submitBtn.disabled = true;
+      // Safe loader: clear and add spinner
+      submitBtn.textContent = '';
+      const icon = document.createElement('i');
+      icon.className = 'ph-bold ph-spinner animate-spin text-lg';
+      const label = document.createElement('span');
+      label.textContent = 'Đang đăng nhập...';
+      submitBtn.appendChild(icon);
+      submitBtn.appendChild(label);
+
+      setTimeout(() => {
+        Auth.login({
+          name: 'Quốc Anh',
+          email: email,
+          avatar: 'assets/images/avatar_2.jpg',
+          role: 'Chủ hộ',
+        });
+        toast('Đăng nhập thành công! Đang chuyển...', 'success', 1500);
+        setTimeout(() => location.href = 'dashboard.html', 800);
+      }, 900);
+    });
+  </script>
+</body>
+</html>

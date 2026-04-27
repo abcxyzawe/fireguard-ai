@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tổng quan · FireGuard AI</title>
+  <link rel="icon" type="image/jpeg" href="assets/images/logo.jpg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="stylesheet" href="assets/css/app.css" />
+  <script src="assets/js/app.js"></script>
+  <script src="assets/js/layout.js"></script>
+  <script>if (!Auth.isLoggedIn()) location.href = 'login.html';</script>
+</head>
+
+<body data-active="dashboard" class="bg-bg-base text-slate-100">
+
+  <main id="pageMain" class="p-5 sm:p-7 lg:p-8 max-w-[1600px]">
+      <!-- Greeting -->
+      <div class="mb-6 fade-in-up">
+        <h2 class="font-display text-2xl sm:text-3xl font-bold">Chào buổi sáng, <span data-user-name class="text-flame-400">Quốc Anh</span> 👋</h2>
+        <p class="mt-1 text-slate-400 text-sm">Đây là tình trạng hệ thống FireGuard của bạn hôm nay.</p>
+      </div>
+
+      <!-- Stats cards -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <!-- Card 1: Status -->
+        <div class="stat-card stat-green relative p-5 rounded-2xl bg-bg-card border border-white/5 overflow-hidden fade-in-up">
+          <div class="flex items-center justify-between mb-4 relative">
+            <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-green-500/30 to-green-700/10 border border-green-500/20 grid place-items-center">
+              <svg class="w-5 h-5 text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+            </div>
+            <span class="px-2 py-0.5 rounded-full bg-green-500/15 text-[10px] font-bold text-green-400 uppercase tracking-wider">An toàn</span>
+          </div>
+          <div class="text-xs text-slate-400 relative">Trạng thái hệ thống</div>
+          <div class="mt-1 font-display text-2xl font-bold text-white relative">Bình thường</div>
+          <div class="mt-2 text-[11px] text-slate-500 flex items-center gap-1 relative">
+            <span class="w-1 h-1 rounded-full bg-green-400 animate-pulse"></span>
+            Cập nhật: vừa xong
+          </div>
+        </div>
+
+        <!-- Card 2: Cameras online -->
+        <div class="stat-card stat-cyan relative p-5 rounded-2xl bg-bg-card border border-white/5 overflow-hidden fade-in-up" style="animation-delay:100ms">
+          <div class="flex items-center justify-between mb-4 relative">
+            <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-cyan-glow/30 to-cyan-glow/5 border border-cyan-glow/20 grid place-items-center">
+              <svg class="w-5 h-5 text-cyan-glow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg>
+            </div>
+            <div class="flex items-center gap-1 text-[10px] font-bold text-cyan-glow">
+              <span class="w-1.5 h-1.5 rounded-full bg-cyan-glow animate-pulse"></span>
+              LIVE
+            </div>
+          </div>
+          <div class="text-xs text-slate-400 relative">Camera online</div>
+          <div class="mt-1 font-display text-2xl font-bold text-white relative"><span class="text-cyan-glow">3</span><span class="text-slate-500 text-lg">/4</span></div>
+          <div class="mt-2 text-[11px] text-slate-500 relative">1 camera offline</div>
+        </div>
+
+        <!-- Card 3: Detections today -->
+        <div class="stat-card stat-flame relative p-5 rounded-2xl bg-bg-card border border-white/5 overflow-hidden fade-in-up" style="animation-delay:200ms">
+          <div class="flex items-center justify-between mb-4 relative">
+            <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-flame-500/30 to-flame-700/5 border border-flame-500/20 grid place-items-center">
+              <svg class="w-5 h-5 text-flame-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+            </div>
+            <span class="px-2 py-0.5 rounded-full bg-flame-500/15 text-[10px] font-bold text-flame-300 uppercase tracking-wider">24H</span>
+          </div>
+          <div class="text-xs text-slate-400 relative">Phát hiện hôm nay</div>
+          <div class="mt-1 font-display text-2xl font-bold text-white relative">0 <span class="text-slate-500 text-base font-normal">vụ</span></div>
+          <div class="mt-2 text-[11px] text-slate-500 relative">Không có cảnh báo</div>
+        </div>
+
+        <!-- Card 4: False positives blocked -->
+        <div class="stat-card stat-purple relative p-5 rounded-2xl bg-bg-card border border-white/5 overflow-hidden fade-in-up" style="animation-delay:300ms">
+          <div class="flex items-center justify-between mb-4 relative">
+            <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-purple-500/30 to-purple-700/5 border border-purple-500/20 grid place-items-center">
+              <svg class="w-5 h-5 text-purple-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>
+            </div>
+            <span class="px-2 py-0.5 rounded-full bg-purple-500/15 text-[10px] font-bold text-purple-400 uppercase tracking-wider">+2 mới</span>
+          </div>
+          <div class="text-xs text-slate-400 relative">Chặn báo động sai</div>
+          <div class="mt-1 font-display text-2xl font-bold text-white relative">12</div>
+          <div class="mt-2 text-[11px] text-slate-500 relative">Tuần này</div>
+        </div>
+      </div>
+
+      <!-- 2-column content -->
+      <div class="grid lg:grid-cols-3 gap-5">
+        <!-- Left: Camera grid -->
+        <div class="lg:col-span-2 space-y-5">
+          <!-- Camera section -->
+          <div class="p-5 sm:p-6 rounded-2xl bg-bg-card border border-white/5 fade-in-up" style="animation-delay:400ms">
+            <div class="flex items-center justify-between mb-5">
+              <div>
+                <h3 class="font-display font-bold text-lg">Camera trực tiếp</h3>
+                <p class="text-xs text-slate-500 mt-0.5">Giám sát 4 khu vực</p>
+              </div>
+              <a href="cameras.html" class="text-xs text-flame-400 hover:text-flame-300 flex items-center gap-1 font-semibold">
+                Xem tất cả <i class="ph-bold ph-arrow-right"></i>
+              </a>
+            </div>
+
+            <!-- Cam grid -->
+            <div id="cameraGrid" class="grid sm:grid-cols-2 gap-3"></div>
+          </div>
+
+          <!-- System performance -->
+          <div class="p-5 sm:p-6 rounded-2xl bg-bg-card border border-white/5 fade-in-up" style="animation-delay:500ms">
+            <div class="flex items-center justify-between mb-5">
+              <div>
+                <h3 class="font-display font-bold text-lg">Hiệu năng hệ thống</h3>
+                <p class="text-xs text-slate-500 mt-0.5">24 giờ qua</p>
+              </div>
+            </div>
+
+            <div class="space-y-4">
+              <!-- CPU -->
+              <div>
+                <div class="flex items-center justify-between mb-1.5">
+                  <div class="flex items-center gap-2">
+                    <i class="ph-bold ph-cpu text-cyan-glow"></i>
+                    <span class="text-sm">CPU Raspberry Pi</span>
+                  </div>
+                  <span class="font-mono text-sm font-bold text-cyan-glow">42%</span>
+                </div>
+                <div class="h-2 rounded-full bg-white/5 overflow-hidden">
+                  <div class="h-full bg-gradient-to-r from-cyan-glow/80 to-cyan-glow rounded-full" style="width: 42%"></div>
+                </div>
+              </div>
+              <!-- RAM -->
+              <div>
+                <div class="flex items-center justify-between mb-1.5">
+                  <div class="flex items-center gap-2">
+                    <i class="ph-bold ph-memory text-purple-400"></i>
+                    <span class="text-sm">RAM sử dụng</span>
+                  </div>
+                  <span class="font-mono text-sm font-bold text-purple-400">2.3 / 6 GB</span>
+                </div>
+                <div class="h-2 rounded-full bg-white/5 overflow-hidden">
+                  <div class="h-full bg-gradient-to-r from-purple-500/80 to-purple-400 rounded-full" style="width: 38%"></div>
+                </div>
+              </div>
+              <!-- WiFi -->
+              <div>
+                <div class="flex items-center justify-between mb-1.5">
+                  <div class="flex items-center gap-2">
+                    <i class="ph-bold ph-wifi-high text-green-400"></i>
+                    <span class="text-sm">Kết nối WiFi</span>
+                  </div>
+                  <span class="font-mono text-sm font-bold text-green-400">-52 dBm (Mạnh)</span>
+                </div>
+                <div class="h-2 rounded-full bg-white/5 overflow-hidden">
+                  <div class="h-full bg-gradient-to-r from-green-500/80 to-green-400 rounded-full" style="width: 85%"></div>
+                </div>
+              </div>
+              <!-- Storage -->
+              <div>
+                <div class="flex items-center justify-between mb-1.5">
+                  <div class="flex items-center gap-2">
+                    <i class="ph-bold ph-hard-drive text-flame-400"></i>
+                    <span class="text-sm">Lưu trữ ảnh sự cố</span>
+                  </div>
+                  <span class="font-mono text-sm font-bold text-flame-400">4.2 / 32 GB</span>
+                </div>
+                <div class="h-2 rounded-full bg-white/5 overflow-hidden">
+                  <div class="h-full bg-gradient-to-r from-flame-500/80 to-flame-400 rounded-full" style="width: 13%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Events + Quick actions -->
+        <div class="space-y-5">
+          <!-- Quick actions -->
+          <div class="p-5 sm:p-6 rounded-2xl bg-bg-card border border-white/5 fade-in-up" style="animation-delay:400ms">
+            <h3 class="font-display font-bold text-base mb-4">Thao tác nhanh</h3>
+            <div class="grid grid-cols-2 gap-2.5">
+              <button class="p-3 rounded-xl bg-white/5 hover:bg-flame-500/10 hover:border-flame-500/30 border border-white/5 transition text-left">
+                <i class="ph-fill ph-play-circle text-green-400 text-xl"></i>
+                <div class="mt-2 text-xs font-semibold">Bật hệ thống</div>
+              </button>
+              <button class="p-3 rounded-xl bg-white/5 hover:bg-flame-500/10 hover:border-flame-500/30 border border-white/5 transition text-left">
+                <i class="ph-fill ph-bell-slash text-yellow-400 text-xl"></i>
+                <div class="mt-2 text-xs font-semibold">Tạm tắt báo</div>
+              </button>
+              <button class="p-3 rounded-xl bg-white/5 hover:bg-flame-500/10 hover:border-flame-500/30 border border-white/5 transition text-left">
+                <i class="ph-fill ph-drop text-cyan-glow text-xl"></i>
+                <div class="mt-2 text-xs font-semibold">Test vòi phun</div>
+              </button>
+              <button class="p-3 rounded-xl bg-white/5 hover:bg-flame-500/10 hover:border-flame-500/30 border border-white/5 transition text-left">
+                <i class="ph-fill ph-arrow-clockwise text-flame-400 text-xl"></i>
+                <div class="mt-2 text-xs font-semibold">Khởi động lại</div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Recent events -->
+          <div class="p-5 sm:p-6 rounded-2xl bg-bg-card border border-white/5 fade-in-up" style="animation-delay:500ms">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="font-display font-bold text-base">Sự kiện gần đây</h3>
+              <a href="history.html" class="text-xs text-flame-400 hover:text-flame-300 font-semibold">Xem hết</a>
+            </div>
+
+            <div id="eventsFeed" class="space-y-2.5 max-h-[420px] overflow-y-auto pr-1"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+  <!-- Populate cameras + events via JS -->
+  <script>
+    Auth.requireAuth();
+    FG.renderShell({ pageTitle: 'Tổng quan', breadcrumb: 'Trang chủ' });
+
+    // Helper to create a camera card safely (no innerHTML with user data)
+    function buildCamCard(cam) {
+      const statusCls = cam.status === 'online' ? 'status-online' : cam.status === 'warning' ? 'status-warning' : 'status-offline';
+      const statusTxt = cam.status === 'online' ? 'Online' : cam.status === 'warning' ? 'Cảnh báo' : 'Offline';
+
+      const card = document.createElement('div');
+      card.className = 'group relative rounded-xl overflow-hidden bg-black border border-white/5 hover:border-flame-400/30 transition cursor-pointer aspect-video';
+
+      // Placeholder "feed" (use logo_art or cam simulation). For demo, use login_art which shows a room.
+      if (cam.status === 'online') {
+        const img = document.createElement('img');
+        img.src = cam.id === 'cam1' ? '../website/assets/images/city.jpg'
+                : cam.id === 'cam2' ? '../website/assets/images/fire_small.jpg'
+                : cam.id === 'cam3' ? 'assets/images/login_art.jpg'
+                : 'assets/images/app_bg.jpg';
+        img.alt = '';
+        img.loading = 'lazy';
+        img.className = 'w-full h-full object-cover opacity-90 group-hover:opacity-100 transition group-hover:scale-105 duration-500';
+        card.appendChild(img);
+      } else {
+        const placeholder = document.createElement('div');
+        placeholder.className = 'absolute inset-0 bg-bg-soft grid place-items-center';
+        const icon = document.createElement('i');
+        icon.className = 'ph ph-wifi-slash text-5xl text-slate-700';
+        placeholder.appendChild(icon);
+        card.appendChild(placeholder);
+      }
+
+      // Overlay
+      const overlay = document.createElement('div');
+      overlay.className = 'absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30';
+      card.appendChild(overlay);
+
+      // Top-left: live badge
+      const liveBadge = document.createElement('div');
+      liveBadge.className = 'absolute top-2.5 left-2.5 flex items-center gap-1.5 px-2 py-1 rounded-md bg-black/60 backdrop-blur-sm text-[10px] font-bold';
+      if (cam.status === 'online') {
+        const dot = document.createElement('span');
+        dot.className = 'w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse';
+        const txt = document.createElement('span');
+        txt.className = 'text-white';
+        txt.textContent = 'LIVE';
+        liveBadge.appendChild(dot);
+        liveBadge.appendChild(txt);
+      } else {
+        const txt = document.createElement('span');
+        txt.className = 'text-slate-400';
+        txt.textContent = 'OFFLINE';
+        liveBadge.appendChild(txt);
+      }
+      card.appendChild(liveBadge);
+
+      // Top-right: status dot
+      const statusBadge = document.createElement('div');
+      statusBadge.className = 'absolute top-2.5 right-2.5';
+      const dot = document.createElement('span');
+      dot.className = `status-dot ${statusCls}`;
+      statusBadge.appendChild(dot);
+      card.appendChild(statusBadge);
+
+      // Bottom: name + info
+      const bottom = document.createElement('div');
+      bottom.className = 'absolute bottom-0 inset-x-0 p-3 flex items-center justify-between';
+      const info = document.createElement('div');
+      const name = document.createElement('div');
+      name.className = 'text-xs font-bold text-white';
+      name.textContent = cam.name;
+      const loc = document.createElement('div');
+      loc.className = 'text-[10px] text-slate-300 mt-0.5';
+      loc.textContent = cam.location + ' • ' + cam.lastSeen;
+      info.appendChild(name); info.appendChild(loc);
+      const fps = document.createElement('div');
+      fps.className = 'text-[10px] font-mono text-slate-300';
+      fps.textContent = cam.fps > 0 ? cam.fps + ' FPS' : '—';
+      bottom.appendChild(info); bottom.appendChild(fps);
+      card.appendChild(bottom);
+
+      card.addEventListener('click', () => location.href = 'cameras.html?select=' + cam.id);
+      return card;
+    }
+
+    function buildEventRow(ev) {
+      const colors = {
+        alert: 'bg-red-500/15 text-red-400',
+        warn: 'bg-yellow-500/15 text-yellow-400',
+        blocked: 'bg-purple-500/15 text-purple-400',
+        info: 'bg-cyan-glow/15 text-cyan-glow',
+      };
+      const row = document.createElement('div');
+      row.className = 'flex items-start gap-3 p-2.5 rounded-lg hover:bg-white/5 transition cursor-pointer';
+
+      const iconWrap = document.createElement('div');
+      iconWrap.className = `flex-shrink-0 w-9 h-9 rounded-lg grid place-items-center ${colors[ev.type] || colors.info}`;
+      const icon = document.createElement('i');
+      icon.className = `ph-fill ${ev.icon}`;
+      iconWrap.appendChild(icon);
+
+      const body = document.createElement('div');
+      body.className = 'flex-1 min-w-0';
+      const title = document.createElement('div');
+      title.className = 'text-sm font-semibold text-white truncate';
+      title.textContent = ev.title;
+      const meta = document.createElement('div');
+      meta.className = 'text-[11px] text-slate-500 mt-0.5';
+      meta.textContent = ev.time + (ev.cam ? ' • ' + ev.cam.toUpperCase() : '');
+      body.appendChild(title); body.appendChild(meta);
+
+      row.appendChild(iconWrap); row.appendChild(body);
+      return row;
+    }
+
+    // Populate camera grid
+    const camGrid = document.getElementById('cameraGrid');
+    MockData.cameras.forEach(cam => camGrid.appendChild(buildCamCard(cam)));
+
+    // Populate events
+    const evFeed = document.getElementById('eventsFeed');
+    MockData.events.slice(0, 7).forEach(ev => evFeed.appendChild(buildEventRow(ev)));
+
+    // Welcome toast
+    setTimeout(() => toast('Chào mừng trở lại, ' + Auth.user().name + '!', 'success'), 400);
+  </script>
+</body>
+</html>

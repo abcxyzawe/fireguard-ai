@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#05070B" />
+  <title>FireGuard</title>
+  <link rel="icon" type="image/jpeg" href="assets/images/logo.jpg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="stylesheet" href="assets/css/app.css" />
+  <script src="assets/js/app.js"></script>
+</head>
+
+<body class="bg-bg-base text-slate-100">
+  <div class="app-container">
+    <!-- Slides -->
+    <div id="slides" class="relative h-screen min-h-[100dvh] overflow-hidden safe-top">
+      <!-- Slide 1 -->
+      <section class="slide absolute inset-0 flex flex-col" data-slide="0">
+        <div class="flex-1 relative flex items-center justify-center p-6">
+          <div class="absolute inset-x-0 top-0 h-2/3 bg-[radial-gradient(ellipse_at_top,rgba(240,78,23,0.25),transparent_60%)]"></div>
+          <img src="assets/images/onb1_detect.jpg" alt="" class="w-full max-w-xs rounded-3xl fade-up" />
+        </div>
+        <div class="px-6 pb-28 fade-up" style="animation-delay:150ms">
+          <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-flame-500/15 border border-flame-500/30 text-[10px] font-bold tracking-widest text-flame-300 uppercase">
+            <span class="w-1.5 h-1.5 rounded-full bg-flame-400"></span>
+            01 · Phát hiện
+          </div>
+          <h1 class="mt-4 font-display text-3xl font-bold leading-tight">
+            AI phát hiện lửa<br/>
+            <span class="grad-flame">trong &lt; 1 giây</span>
+          </h1>
+          <p class="mt-3 text-slate-400 text-[15px] leading-relaxed">
+            Mô hình YOLOv8 với độ chính xác 88.2% giám sát camera liên tục, phát hiện ngọn lửa ngay khi vừa xuất hiện.
+          </p>
+        </div>
+      </section>
+
+      <!-- Slide 2 -->
+      <section class="slide absolute inset-0 flex flex-col hidden" data-slide="1">
+        <div class="flex-1 relative flex items-center justify-center p-6">
+          <div class="absolute inset-x-0 top-0 h-2/3 bg-[radial-gradient(ellipse_at_top,rgba(240,78,23,0.25),transparent_60%)]"></div>
+          <img src="assets/images/onb2_alert.jpg" alt="" class="w-full max-w-xs rounded-3xl fade-up" />
+        </div>
+        <div class="px-6 pb-28 fade-up" style="animation-delay:150ms">
+          <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-flame-500/15 border border-flame-500/30 text-[10px] font-bold tracking-widest text-flame-300 uppercase">
+            <span class="w-1.5 h-1.5 rounded-full bg-flame-400"></span>
+            02 · Cảnh báo
+          </div>
+          <h1 class="mt-4 font-display text-3xl font-bold leading-tight">
+            Nhận thông báo<br/>
+            <span class="grad-flame">tức thì trên điện thoại</span>
+          </h1>
+          <p class="mt-3 text-slate-400 text-[15px] leading-relaxed">
+            Push notification kèm ảnh sự cố ngay cả khi bạn đi vắng. Không bỏ lỡ bất kỳ khoảnh khắc nào.
+          </p>
+        </div>
+      </section>
+
+      <!-- Slide 3 -->
+      <section class="slide absolute inset-0 flex flex-col hidden" data-slide="2">
+        <div class="flex-1 relative flex items-center justify-center p-6">
+          <div class="absolute inset-x-0 top-0 h-2/3 bg-[radial-gradient(ellipse_at_top,rgba(240,78,23,0.25),transparent_60%)]"></div>
+          <img src="assets/images/onb4_water.jpg" alt="" class="w-full max-w-xs rounded-3xl fade-up" />
+        </div>
+        <div class="px-6 pb-28 fade-up" style="animation-delay:150ms">
+          <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-flame-500/15 border border-flame-500/30 text-[10px] font-bold tracking-widest text-flame-300 uppercase">
+            <span class="w-1.5 h-1.5 rounded-full bg-flame-400"></span>
+            03 · Xử lý
+          </div>
+          <h1 class="mt-4 font-display text-3xl font-bold leading-tight">
+            Tự động dập cháy<br/>
+            <span class="grad-flame">ngay trong 2-3 giây</span>
+          </h1>
+          <p class="mt-3 text-slate-400 text-[15px] leading-relaxed">
+            Servo định hướng vòi phun đúng vị trí ngọn lửa, relay kích hoạt máy bơm nước — không cần con người can thiệp.
+          </p>
+        </div>
+      </section>
+    </div>
+
+    <!-- Bottom controls -->
+    <div class="fixed bottom-0 left-0 right-0 max-w-[440px] mx-auto safe-bottom px-6 pt-3 bg-gradient-to-t from-bg-base via-bg-base/90 to-transparent z-20">
+      <div class="flex items-center justify-center gap-1.5 mb-5">
+        <span class="dot active" data-dot="0"></span>
+        <span class="dot" data-dot="1"></span>
+        <span class="dot" data-dot="2"></span>
+      </div>
+      <div class="flex items-center justify-between gap-3">
+        <button id="skipBtn" class="tap px-3 py-3 text-sm font-semibold text-slate-400">Bỏ qua</button>
+        <button id="nextBtn" class="tap btn-primary flex-1 max-w-[220px] flex items-center justify-center gap-2">
+          <span id="nextLabel">Tiếp theo</span>
+          <i class="ph-bold ph-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.dot');
+    const nextBtn = document.getElementById('nextBtn');
+    const nextLabel = document.getElementById('nextLabel');
+    const skipBtn = document.getElementById('skipBtn');
+    let idx = 0;
+
+    function showSlide(i) {
+      slides.forEach((s, j) => s.classList.toggle('hidden', j !== i));
+      dots.forEach((d, j) => d.classList.toggle('active', j === i));
+      nextLabel.textContent = i === slides.length - 1 ? 'Bắt đầu' : 'Tiếp theo';
+      idx = i;
+      haptic(8);
+    }
+
+    nextBtn.addEventListener('click', () => {
+      if (idx < slides.length - 1) showSlide(idx + 1);
+      else location.href = 'login.html';
+    });
+
+    skipBtn.addEventListener('click', () => { location.href = 'login.html'; });
+
+    // Swipe gestures
+    let startX = 0;
+    document.getElementById('slides').addEventListener('touchstart', e => { startX = e.touches[0].clientX; });
+    document.getElementById('slides').addEventListener('touchend', e => {
+      const dx = e.changedTouches[0].clientX - startX;
+      if (dx < -40 && idx < slides.length - 1) showSlide(idx + 1);
+      else if (dx > 40 && idx > 0) showSlide(idx - 1);
+    });
+
+    // Dot click
+    dots.forEach((d, i) => d.addEventListener('click', () => showSlide(i)));
+  </script>
+</body>
+</html>

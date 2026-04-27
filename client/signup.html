@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Đăng ký · FireGuard AI</title>
+  <link rel="icon" type="image/jpeg" href="assets/images/logo.jpg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="stylesheet" href="assets/css/app.css" />
+  <script src="assets/js/app.js"></script>
+</head>
+<body class="bg-bg-base text-slate-100 min-h-screen overflow-hidden">
+  <div class="grid lg:grid-cols-2 min-h-screen">
+    <!-- Left art -->
+    <div class="relative hidden lg:block overflow-hidden">
+      <img src="assets/images/login_art.jpg" alt="" class="absolute inset-0 w-full h-full object-cover" />
+      <div class="absolute inset-0 bg-gradient-to-br from-bg-base/70 via-bg-base/30 to-flame-900/40"></div>
+      <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(240,78,23,0.2),transparent_60%)]"></div>
+      <div class="relative h-full flex flex-col p-10 xl:p-14">
+        <a href="../website/index.html" class="inline-flex items-center gap-2.5 w-fit">
+          <div class="w-11 h-11 rounded-xl overflow-hidden ring-1 ring-flame-500/30"><img src="assets/images/logo.jpg" alt="" class="w-full h-full object-cover" /></div>
+          <span class="font-display font-bold text-xl">Fire<span class="text-flame-400">Guard</span><span class="text-slate-400 font-normal">.AI</span></span>
+        </a>
+        <div class="flex-1 flex items-end">
+          <div class="slide-in-left">
+            <h2 class="font-display text-4xl xl:text-5xl font-bold leading-tight">Tham gia cộng đồng <br/><span class="bg-gradient-to-r from-flame-300 to-ember-500 bg-clip-text text-transparent">an toàn hơn</span></h2>
+            <p class="mt-5 text-slate-300 text-lg max-w-md leading-relaxed">Tạo tài khoản miễn phí để đồng bộ camera, nhận cảnh báo trên mọi thiết bị.</p>
+            <ul class="mt-8 space-y-3 text-sm">
+              <li class="flex items-center gap-2"><i class="ph-fill ph-check-circle text-flame-400 text-lg"></i> Quản lý không giới hạn số camera</li>
+              <li class="flex items-center gap-2"><i class="ph-fill ph-check-circle text-flame-400 text-lg"></i> Đồng bộ với app Android</li>
+              <li class="flex items-center gap-2"><i class="ph-fill ph-check-circle text-flame-400 text-lg"></i> Lưu trữ lịch sử sự cố 90 ngày</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right form -->
+    <div class="relative flex items-center justify-center p-6 sm:p-10 lg:p-14 overflow-y-auto">
+      <div class="lg:hidden absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,rgba(240,78,23,0.15),transparent_60%)]"></div>
+      <a href="../website/index.html" class="lg:hidden absolute top-6 left-6 flex items-center gap-2">
+        <div class="w-9 h-9 rounded-xl overflow-hidden"><img src="assets/images/logo.jpg" alt="" class="w-full h-full object-cover" /></div>
+        <span class="font-display font-bold text-base">Fire<span class="text-flame-400">Guard</span></span>
+      </a>
+
+      <div class="w-full max-w-md fade-in-up py-10 lg:py-0">
+        <div class="mb-8">
+          <h1 class="font-display text-3xl sm:text-4xl font-bold">Tạo tài khoản</h1>
+          <p class="mt-2 text-slate-400">Chỉ cần vài bước để bắt đầu.</p>
+        </div>
+
+        <form id="signupForm" class="space-y-4" novalidate>
+          <div>
+            <label class="block text-sm font-medium text-slate-300 mb-1.5">Họ và tên</label>
+            <div class="relative">
+              <i class="ph-bold ph-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-lg"></i>
+              <input type="text" name="name" autocomplete="name" required placeholder="Nguyễn Văn A" class="input-base w-full pl-11 pr-4 py-3.5 rounded-xl text-sm" />
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-300 mb-1.5">Email</label>
+            <div class="relative">
+              <i class="ph-bold ph-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-lg"></i>
+              <input type="email" name="email" autocomplete="email" required placeholder="you@example.com" class="input-base w-full pl-11 pr-4 py-3.5 rounded-xl text-sm" />
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-300 mb-1.5">Số điện thoại</label>
+            <div class="relative">
+              <i class="ph-bold ph-phone absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-lg"></i>
+              <input type="tel" name="phone" autocomplete="tel" required placeholder="0912 345 678" class="input-base w-full pl-11 pr-4 py-3.5 rounded-xl text-sm" />
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-300 mb-1.5">Mật khẩu</label>
+            <div class="relative">
+              <i class="ph-bold ph-lock-key absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-lg"></i>
+              <input type="password" name="password" autocomplete="new-password" required placeholder="Tối thiểu 8 ký tự" class="input-base w-full pl-11 pr-4 py-3.5 rounded-xl text-sm" />
+            </div>
+          </div>
+
+          <label class="flex items-start gap-2 text-sm text-slate-300 cursor-pointer">
+            <input type="checkbox" required class="mt-1 w-4 h-4 rounded bg-white/5 border-white/20 text-flame-500 focus:ring-flame-500 focus:ring-offset-0" />
+            <span>Tôi đồng ý với <a href="#" class="text-flame-400 hover:text-flame-300">Điều khoản dịch vụ</a> và <a href="#" class="text-flame-400 hover:text-flame-300">Chính sách bảo mật</a>.</span>
+          </label>
+
+          <button type="submit" class="btn-primary w-full py-3.5 rounded-xl flex items-center justify-center gap-2 text-sm">
+            <span>Tạo tài khoản</span>
+            <i class="ph-bold ph-arrow-right"></i>
+          </button>
+        </form>
+
+        <p class="mt-8 text-center text-sm text-slate-400">
+          Đã có tài khoản?
+          <a href="login.html" class="text-flame-400 font-semibold hover:text-flame-300">Đăng nhập</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('signupForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const f = e.target;
+      if (!f.name.value || !f.email.value || !f.password.value) {
+        toast('Vui lòng điền đủ thông tin', 'warn'); return;
+      }
+      const btn = f.querySelector('button[type=submit]');
+      btn.disabled = true;
+      btn.textContent = '';
+      const icon = document.createElement('i');
+      icon.className = 'ph-bold ph-spinner animate-spin text-lg';
+      const label = document.createElement('span');
+      label.textContent = 'Đang tạo tài khoản...';
+      btn.appendChild(icon); btn.appendChild(label);
+      setTimeout(() => {
+        Auth.login({ name: f.name.value, email: f.email.value, role: 'Chủ hộ', avatar: 'assets/images/avatar_2.jpg' });
+        toast('Tạo tài khoản thành công!', 'success', 1200);
+        setTimeout(() => location.href = 'dashboard.html', 700);
+      }, 900);
+    });
+  </script>
+</body>
+</html>

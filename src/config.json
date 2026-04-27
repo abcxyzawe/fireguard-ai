@@ -1,0 +1,96 @@
+{
+    "active_mode": "sensitive",
+    "enable_smoke": true,
+    "model": {
+        "weights": "../models/best.pt",
+        "imgsz": 640,
+        "device": 0
+    },
+    "serial": {
+        "port": "COM4",
+        "baudrate": 9600,
+        "enabled": true
+    },
+    "paths": {
+        "image_dir": "received_images",
+        "csv_path": "detections.csv"
+    },
+    "bbox": {
+        "fire_min_area": 5e-05,
+        "smoke_min_area": 0.001,
+        "fire_max_area": 0.5,
+        "smoke_max_area": 0.95,
+        "max_area": 0.5,
+        "max_aspect": 6.0,
+        "min_aspect": 0.15
+    },
+    "fire_modes": {
+        "safe": {
+            "yolo_conf": 0.35,
+            "verify_threshold": 0.4,
+            "confirm_frames": 3,
+            "flicker_required": false,
+            "use_score_fusion": false,
+            "score_threshold": 0.65,
+            "score_weights": {
+                "yolo": 0.4,
+                "color": 0.4,
+                "flicker": 0.2
+            }
+        },
+        "sensitive": {
+            "yolo_conf": 0.35,
+            "verify_threshold": 0.28,
+            "confirm_frames": 3,
+            "flicker_required": false,
+            "use_score_fusion": false,
+            "score_threshold": 0.55,
+            "score_weights": {
+                "yolo": 0.35,
+                "color": 0.45,
+                "flicker": 0.2
+            }
+        },
+        "ultra_sensitive": {
+            "yolo_conf": 0.15,
+            "verify_threshold": 0.18,
+            "confirm_frames": 2,
+            "flicker_required": true,
+            "use_score_fusion": true,
+            "score_threshold": 0.5,
+            "score_weights": {
+                "yolo": 0.3,
+                "color": 0.4,
+                "flicker": 0.3
+            }
+        }
+    },
+    "smoke_modes": {
+        "safe": {
+            "yolo_conf": 0.35,
+            "verify_threshold": 0.45,
+            "confirm_frames": 3
+        },
+        "sensitive": {
+            "yolo_conf": 0.3,
+            "verify_threshold": 0.35,
+            "confirm_frames": 2
+        },
+        "ultra_sensitive": {
+            "yolo_conf": 0.15,
+            "verify_threshold": 0.25,
+            "confirm_frames": 3
+        }
+    },
+    "flicker": {
+        "history_size": 5,
+        "min_std": 8.0,
+        "normalize_factor": 20.0
+    },
+    "cam2_trigger": {
+        "enabled": false,
+        "ip": "192.168.137.100",
+        "port": 80,
+        "interval": 2.0
+    }
+}
