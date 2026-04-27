@@ -32,6 +32,22 @@ from fire_utils import (
     DEFAULT_CONFIG, verify_fire_roi
 )
 
+# Turret control (optional - requires ESP32-CAM 2 + Arduino)
+try:
+    from stereo import stereo_distance
+    from turret_controller import TurretController
+    TURRET_AVAILABLE = True
+except Exception as e:
+    print(f"[TURRET] module load failed: {e}")
+    TURRET_AVAILABLE = False
+    stereo_distance = None
+    TurretController = None
+
+# ESP32-CAM 2 control endpoint URL (set via /turret/config or env)
+ESP2_CONTROL_URL = os.environ.get("ESP2_URL", "")
+turret = TurretController(ESP2_CONTROL_URL) if TURRET_AVAILABLE else None
+turret_lock = threading.Lock()
+
 # YOLO model (optional import)
 try:
     from ultralytics import YOLO
@@ -1119,6 +1135,102 @@ def status():
     })
 
 
+# ============================================================
+# TURRET ENDPOINTS (stereo + servo + pump control)
+# ============================================================
+def _bboxes_from_result(cam_result):
+    """Extract fire bboxes [[x1,y1,x2,y2],...] from a cam detection result dict."""
+    if not cam_result:
+        return []
+    out = []
+    for fb in cam_result.get("fire_bboxes", []) or []:
+        bb = fb.get("bbox") if isinstance(fb, dict) else fb
+        if bb and len(bb) == 4:
+            out.append([int(v) for v in bb])
+    return out
+
+
+@app.route('/turret/config', methods=['GET', 'POST'])
+def turret_config():
+    """Get / set ESP32-CAM 2 control URL.
+    POST body: {"esp2_url": "http://10.199.56.103"}
+    """
+    global ESP2_CONTROL_URL
+    if not TURRET_AVAILABLE:
+        return jsonify({"error": "turret module not available"}), 500
+    if request.method == 'POST':
+        data = request.get_json(silent=True) or {}
+        url = data.get("esp2_url", "").strip()
+        ESP2_CONTROL_URL = url
+        if turret:
+            turret.esp2_url = url
+        return jsonify({"ok": True, "esp2_url": ESP2_CONTROL_URL})
+    return jsonify({"esp2_url": ESP2_CONTROL_URL})
+
+
+@app.route('/turret/process', methods=['POST'])
+def turret_process():
+    """Run one turret control cycle.
+
+    Uses latest cam1 + cam2 detection results from `last_detection_result`,
+    computes stereo distance, picks/locks target, sends servo+pump command
+    to ESP32-CAM 2.
+
+    Returns: {"command": {...}, "esp_response": {...} or null}
+    """
+    if not TURRET_AVAILABLE or turret is None:
+        return jsonify({"error": "turret module not available"}), 500
+
+    with last_detection_lock:
+        cam1 = last_detection_result.get("cam1", {})
+        cam2 = last_detection_result.get("cam2", {})
+
+    bboxes_left  = _bboxes_from_result(cam1)
+    bboxes_right = _bboxes_from_result(cam2)
+
+    # Stereo distance (None if can't pair)
+    distance_m = None
+    if bboxes_left and bboxes_right:
+        try:
+            d, _pair = stereo_distance(bboxes_left, bboxes_right)
+            distance_m = d
+        except Exception as e:
+            print(f"[TURRET] stereo error: {e}")
+
+    with turret_lock:
+        cmd = turret.update(bboxes_left, bboxes_right, distance_m=distance_m)
+        resp = turret.send(cmd) if turret.esp2_url else None
+
+    return jsonify({"command": cmd, "esp_response": resp})
+
+
+@app.route('/turret/state', methods=['GET'])
+def turret_state():
+    """Snapshot of controller state."""
+    if not TURRET_AVAILABLE or turret is None:
+        return jsonify({"error": "turret module not available"}), 500
+    with turret_lock:
+        return jsonify({
+            "pan":      turret.current_pan,
+            "tilt":     turret.current_tilt,
+            "target":   list(map(int, turret.target)) if turret.target else None,
+            "distance_m":  turret.last_distance,
+            "centered_streak": turret.centered_streak,
+            "last_burst_at":   turret.last_burst_at,
+            "esp2_url":  turret.esp2_url,
+        })
+
+
+@app.route('/turret/home', methods=['POST'])
+def turret_home():
+    """Reset turret to home position, pump off."""
+    if not TURRET_AVAILABLE or turret is None:
+        return jsonify({"error": "turret module not available"}), 500
+    with turret_lock:
+        turret.home()
+    return jsonify({"ok": True})
+
+
 @app.route('/latest')
 @app.route('/latest/<cam_id>')
 def latest_image(cam_id="cam1"):
@@ -1816,6 +1928,61 @@ def start_cam2_polling():
 
 
 # ============================================================
+# TURRET BACKGROUND LOOP
+# ============================================================
+turret_running = False
+turret_thread = None
+
+def turret_control_loop():
+    """Continuously process latest cam1+cam2 detections and command ESP2 turret."""
+    global turret_running
+    if not (TURRET_AVAILABLE and turret):
+        return
+    turret_running = True
+    print("[TURRET] Control loop started")
+    INTERVAL = 0.4  # 2.5 Hz update rate
+
+    while turret_running:
+        if not turret.esp2_url:
+            time.sleep(2.0)
+            continue
+        try:
+            with last_detection_lock:
+                cam1 = last_detection_result.get("cam1", {})
+                cam2 = last_detection_result.get("cam2", {})
+            bb_l = _bboxes_from_result(cam1)
+            bb_r = _bboxes_from_result(cam2)
+
+            distance_m = None
+            if bb_l and bb_r:
+                try:
+                    d, _ = stereo_distance(bb_l, bb_r)
+                    distance_m = d
+                except Exception:
+                    pass
+
+            with turret_lock:
+                cmd = turret.update(bb_l, bb_r, distance_m=distance_m)
+                turret.send(cmd)
+        except Exception as e:
+            print(f"[TURRET] loop error: {e}")
+        time.sleep(INTERVAL)
+    print("[TURRET] Control loop stopped")
+
+
+def start_turret_loop():
+    global turret_thread
+    if not (TURRET_AVAILABLE and turret):
+        print("[TURRET] Disabled (module unavailable)")
+        return
+    if turret_thread and turret_thread.is_alive():
+        return
+    turret_thread = threading.Thread(target=turret_control_loop, daemon=True)
+    turret_thread.start()
+    print(f"[TURRET] Started (esp2_url={turret.esp2_url or 'NOT SET'})")
+
+
+# ============================================================
 # MAIN
 # ============================================================
 
@@ -1851,6 +2018,8 @@ def main():
     else:
         # Start cam2 trigger polling
         start_cam2_polling()
+        # Start turret control loop (no-op if turret module unavailable / no ESP2 URL)
+        start_turret_loop()
 
         print(f"\n{'='*50}")
         print(f"  He thong Kiem soat Lua & Khoi")
@@ -1863,6 +2032,7 @@ def main():
             print(f"  Cam2: {cam2_cfg.get('ip')}:{cam2_cfg.get('port')} (trigger mode)")
         else:
             print(f"  Cam2: Disabled")
+        print(f"  Turret: {'ON · ' + turret.esp2_url if (turret and turret.esp2_url) else 'OFF (no ESP2 URL)'}")
         print(f"{'='*50}\n")
         app.run(host='0.0.0.0', port=args.port, threaded=True)
 
