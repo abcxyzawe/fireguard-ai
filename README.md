@@ -2,8 +2,6 @@
 
 **Hệ thống phát hiện và chữa cháy thông minh bằng AI**
 
-Đồ án sinh viên — Đại học Công nghệ Đông Á (EAUT) · 2026
-
 ---
 
 ## 📌 Tổng quan
