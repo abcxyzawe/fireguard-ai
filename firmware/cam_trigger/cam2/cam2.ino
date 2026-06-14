@@ -1,14 +1,22 @@
 /* ============================================================================
- * FireGuard - ESP32-CAM 2 (CONTROL node)
- * - Capture & POST images to server (cam2 = stereo right)
- * - Receive servo commands (pan, tilt) from server via HTTP /control
- * - Output digital HIGH/LOW on GPIO13 -> Arduino UNO -> Relay -> Pump
- * - Burst firing: HIGH for N ms then auto LOW
+ * FireGuard - ESP32-CAM 2 (CONTROL / BRIDGE node)
+ *
+ * Nhiem vu:
+ *   - Chup anh & POST len server (cam2 = stereo right)
+ *   - Nhan lenh tu server qua HTTP POST /control  {pan, tilt, pump, burst_ms}
+ *   - CHUYEN TIEP lenh xuong Arduino UNO qua UART (GPIO13 -> UNO D2)
+ *
+ * KHONG dieu khien servo truc tiep nua -> UNO lo servo + relay + bom
+ * (tranh xung dot timer LEDC giua camera va servo tren ESP32-CAM).
  *
  * Pin map:
- *   GPIO 14 -> Servo PAN  signal
- *   GPIO 15 -> Servo TILT signal
- *   GPIO 13 -> Pump trigger output (to Arduino digital input)
+ *   GPIO 13 -> UART TX  (3.3V)  ->  Arduino UNO D2 (SoftwareSerial RX)
+ *   GND     <->                     Arduino UNO GND   *** BAT BUOC chung GND ***
+ *
+ * Giao thuc UART (ESP2 -> UNO, 9600 baud, moi lenh 1 dong):
+ *   "<pan>,<tilt>,<pump>,<burst_ms>\n"
+ *   vd: "90,60,1,2500\n"  = pan 90, tilt 60, bom BAT trong 2500ms
+ *       "90,60,0,0\n"     = pan 90, tilt 60, bom TAT
  * ========================================================================== */
 
 #include "esp_camera.h"
@@ -16,7 +24,6 @@
 #include <HTTPClient.h>
 #include <WebServer.h>
 #include <ArduinoJson.h>
-#include <ESP32Servo.h>
 
 /* ================= CAMERA PINS (AI THINKER) ================= */
 #define PWDN_GPIO_NUM     32
@@ -37,75 +44,47 @@
 #define PCLK_GPIO_NUM     22
 #define LED_GPIO_NUM       4
 
-/* ================= ACTUATOR PINS ================= */
-#define PIN_SERVO_PAN     14   // Pan servo signal
-#define PIN_SERVO_TILT    15   // Tilt servo signal
-#define PIN_PUMP_TRIGGER  13   // Digital out -> Arduino input
+/* ================= UART -> ARDUINO UNO ================= */
+#define PIN_UART_TX  13          // ESP2 GPIO13 -> UNO D2 (RX). RX khong dung.
+#define UNO_BAUD     9600
+HardwareSerial UnoSerial(1);     // dung UART1 cua ESP32
 
 /* ================= CONFIG ================= */
 const char* ssid     = "Op";
 const char* password = "12345678";
-const char* serverHost = "10.199.56.144";  // Laptop server IP
+const char* serverHost = "10.199.56.144";  // IP laptop chay server
 const int   serverPort = 5000;
 
-#define CAPTURE_INTERVAL_MS 500   // 2 FPS for stereo pairing
+#define CAPTURE_INTERVAL_MS 500   // 2 FPS de ghep stereo voi cam1
 #define WIFI_TIMEOUT_MS    15000
 #define WIFI_RETRY_MS      10000
 #define HTTP_TIMEOUT_MS     5000
 
-// Servo limits (degrees)
-#define PAN_MIN   0
-#define PAN_MAX   180
-#define TILT_MIN  20    // don't aim into ground
-#define TILT_MAX  160
-#define PAN_HOME  90
-#define TILT_HOME 90
-
-// Burst firing safety
-#define BURST_MAX_MS  5000   // never longer than 5 seconds
+// Gioi han goc (chi de bao cao /status; UNO van tu clamp lai)
+#define PAN_HOME   90
+#define TILT_HOME  90
 
 /* ================= STATE ================= */
-Servo servoPan;
-Servo servoTilt;
 WebServer httpServer(80);
-
 unsigned long lastCapture = 0;
 unsigned long lastWiFiCheck = 0;
 bool wifiConnected = false;
 
-int currentPan = PAN_HOME;
-int currentTilt = TILT_HOME;
-unsigned long pumpUntilMs = 0;   // 0 = pump off
+int  lastPan  = PAN_HOME;
+int  lastTilt = TILT_HOME;
+bool lastPump = false;
 
-/* ================= UTIL ================= */
-int clampInt(int v, int lo, int hi) {
-  if (v < lo) return lo;
-  if (v > hi) return hi;
-  return v;
-}
+/* ================= GUI LENH XUONG UNO ================= */
+void sendToUno(int pan, int tilt, bool pump, int burst_ms) {
+  // Dinh dang: "pan,tilt,pump,burst_ms\n"
+  UnoSerial.print(pan);    UnoSerial.print(',');
+  UnoSerial.print(tilt);   UnoSerial.print(',');
+  UnoSerial.print(pump ? 1 : 0); UnoSerial.print(',');
+  UnoSerial.print(burst_ms);
+  UnoSerial.print('\n');
 
-void applyServos(int pan, int tilt) {
-  pan  = clampInt(pan,  PAN_MIN,  PAN_MAX);
-  tilt = clampInt(tilt, TILT_MIN, TILT_MAX);
-  servoPan.write(pan);
-  servoTilt.write(tilt);
-  currentPan = pan;
-  currentTilt = tilt;
-}
-
-void setPump(bool on) {
-  digitalWrite(PIN_PUMP_TRIGGER, on ? HIGH : LOW);
-}
-
-void startBurst(int ms) {
-  ms = clampInt(ms, 0, BURST_MAX_MS);
-  if (ms <= 0) {
-    pumpUntilMs = 0;
-    setPump(false);
-    return;
-  }
-  pumpUntilMs = millis() + ms;
-  setPump(true);
+  lastPan = pan; lastTilt = tilt; lastPump = pump;
+  Serial.printf("[UNO] -> %d,%d,%d,%d\n", pan, tilt, pump ? 1 : 0, burst_ms);
 }
 
 /* ================= WIFI ================= */
@@ -132,21 +111,20 @@ bool connectWiFi() {
 }
 
 /* ================= HTTP HANDLERS ================= */
-// GET /status - simple health check
+// GET /status
 void handleStatus() {
   StaticJsonDocument<256> doc;
   doc["device"] = "ESP32-CAM-2";
   doc["ip"]     = WiFi.localIP().toString();
-  doc["pan"]    = currentPan;
-  doc["tilt"]   = currentTilt;
-  doc["pump"]   = (pumpUntilMs != 0 && millis() < pumpUntilMs);
+  doc["pan"]    = lastPan;
+  doc["tilt"]   = lastTilt;
+  doc["pump"]   = lastPump;
   String out;
   serializeJson(doc, out);
   httpServer.send(200, "application/json", out);
 }
 
-// POST /control - receive command from server
-// Body JSON: { "pan": 90, "tilt": 60, "pump": true, "burst_ms": 2500 }
+// POST /control  body: {"pan":90,"tilt":60,"pump":true,"burst_ms":2500}
 void handleControl() {
   if (httpServer.method() != HTTP_POST) {
     httpServer.send(405, "text/plain", "POST only");
@@ -154,67 +132,43 @@ void handleControl() {
   }
   String body = httpServer.arg("plain");
   StaticJsonDocument<256> doc;
-  DeserializationError err = deserializeJson(doc, body);
-  if (err) {
+  if (deserializeJson(doc, body)) {
     httpServer.send(400, "text/plain", "Bad JSON");
     return;
   }
 
-  bool changed = false;
-  if (doc.containsKey("pan") || doc.containsKey("tilt")) {
-    int pan  = doc["pan"]  | currentPan;
-    int tilt = doc["tilt"] | currentTilt;
-    applyServos(pan, tilt);
-    changed = true;
-  }
+  int  pan      = doc["pan"]      | lastPan;
+  int  tilt     = doc["tilt"]     | lastTilt;
+  bool pump     = doc["pump"]     | false;
+  int  burst_ms = doc["burst_ms"] | 0;
 
-  if (doc.containsKey("pump")) {
-    bool pumpOn = doc["pump"].as<bool>();
-    if (pumpOn) {
-      int ms = doc["burst_ms"] | 2500;  // default 2.5s burst
-      startBurst(ms);
-    } else {
-      pumpUntilMs = 0;
-      setPump(false);
-    }
-    changed = true;
-  }
+  sendToUno(pan, tilt, pump, burst_ms);
 
   StaticJsonDocument<128> resp;
-  resp["ok"] = true;
-  resp["pan"] = currentPan;
-  resp["tilt"] = currentTilt;
-  resp["pump"] = (pumpUntilMs != 0 && millis() < pumpUntilMs);
+  resp["ok"]   = true;
+  resp["pan"]  = pan;
+  resp["tilt"] = tilt;
+  resp["pump"] = pump;
   String out;
   serializeJson(resp, out);
   httpServer.send(200, "application/json", out);
 }
 
-// GET /home - reset servos to home, pump off
+// GET /home -> servo ve giua, tat bom
 void handleHome() {
-  applyServos(PAN_HOME, TILT_HOME);
-  pumpUntilMs = 0;
-  setPump(false);
+  sendToUno(PAN_HOME, TILT_HOME, false, 0);
   httpServer.send(200, "text/plain", "homed");
 }
 
 /* ================= SETUP ================= */
 void setup() {
   Serial.begin(115200);
-  Serial.println("\n=== ESP32-CAM 2 (CONTROL node) ===");
+  Serial.println("\n=== ESP32-CAM 2 (CONTROL / BRIDGE) ===");
 
-  // Pump trigger: default LOW
-  pinMode(PIN_PUMP_TRIGGER, OUTPUT);
-  digitalWrite(PIN_PUMP_TRIGGER, LOW);
-
-  // Servos: attach + go home
-  ESP32PWM::allocateTimer(0);
-  ESP32PWM::allocateTimer(1);
-  servoPan.setPeriodHertz(50);
-  servoTilt.setPeriodHertz(50);
-  servoPan.attach(PIN_SERVO_PAN, 500, 2400);
-  servoTilt.attach(PIN_SERVO_TILT, 500, 2400);
-  applyServos(PAN_HOME, TILT_HOME);
+  // UART xuong UNO: chi dung chan TX (GPIO13), RX = -1 (khong dung)
+  UnoSerial.begin(UNO_BAUD, SERIAL_8N1, -1, PIN_UART_TX);
+  delay(200);
+  sendToUno(PAN_HOME, TILT_HOME, false, 0);  // dua ve home luc khoi dong
 
   // Camera
   camera_config_t config = {};
@@ -271,12 +225,12 @@ void setup() {
   // WiFi
   wifiConnected = connectWiFi();
 
-  // HTTP server (for /control)
+  // HTTP server
   httpServer.on("/status",  HTTP_GET,  handleStatus);
   httpServer.on("/home",    HTTP_GET,  handleHome);
   httpServer.on("/control", HTTP_POST, handleControl);
   httpServer.begin();
-  Serial.println("[HTTP] Server on :80 (/control, /status, /home)");
+  Serial.println("[HTTP] :80  (/control, /status, /home)");
 }
 
 /* ================= LOOP ================= */
@@ -297,20 +251,10 @@ void postImage() {
 }
 
 void loop() {
-  // Handle HTTP control requests
   httpServer.handleClient();
 
-  // Auto-stop pump when burst expires
-  if (pumpUntilMs != 0 && millis() >= pumpUntilMs) {
-    pumpUntilMs = 0;
-    setPump(false);
-    Serial.println("[PUMP] Burst done -> OFF");
-  }
-
-  // Periodic image upload
   if (millis() - lastCapture >= CAPTURE_INTERVAL_MS) {
     lastCapture = millis();
-
     if (WiFi.status() != WL_CONNECTED) {
       if (wifiConnected) { Serial.println("[WiFi] disconnected"); wifiConnected = false; }
       if (millis() - lastWiFiCheck > WIFI_RETRY_MS) {
@@ -319,7 +263,6 @@ void loop() {
       }
       return;
     } else if (!wifiConnected) wifiConnected = true;
-
     postImage();
   }
 }

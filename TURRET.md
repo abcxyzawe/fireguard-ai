@@ -13,56 +13,81 @@ Hệ thống turret tự động bám theo lửa, dùng stereo vision (2 ESP32-C
 ┌─────────────┐  WiFi   │   Laptop     │   {pan,tilt,pump,burst_ms}
 │ ESP32-CAM 2 │ ──────▶ │   Server     │ ──────────────▶ ┌──────────────┐
 │ (vision +   │  /upload│   Flask      │                  │ ESP32-CAM 2  │
-│  control)   │  cam=2  │              │                  │ + 2 servos   │
-└──────▲──────┘         │   Stereo +   │                  │ + GPIO out   │
+│  bridge)    │  cam=2  │              │                  │ (cam+WiFi+   │
+└──────▲──────┘         │   Stereo +   │                  │  bridge)     │
        │                │   Target     │                  └──────┬───────┘
-       │                │   Lock +     │                         │ GPIO13 HIGH/LOW
-       │                │   Ballistics │                         ▼
+       │                │   Lock +     │            UART GPIO13 → │ "pan,tilt,pump,burst\n"
+       │                │   Ballistics │                  (3.3V)  ▼  → UNO D2
        │                └──────────────┘                  ┌──────────────┐
        │                                                  │ Arduino UNO  │
-       │                                                  │ D7 input     │
-       │                                                  │ D8 → relay   │
-       └─── controls servos directly via PWM              └──────┬───────┘
-                                                                 │
-                                                                 ▼
-                                                         ┌──────────────┐
-                                                         │  Máy bơm     │
-                                                         │  + Vòi phun  │
-                                                         └──────────────┘
+       │                                                  │ D9  → Servo PAN  │
+       │                                                  │ D10 → Servo TILT │
+       │                                                  │ D7  → Relay      │
+       │                                                  └──────┬───────┘
+       │                                                         │
+       │                                                         ▼
+       │                                                  ┌──────────────┐
+       │                                                  │  Máy bơm     │
+       │                                                  │  + Vòi phun  │
+       │                                                  └──────────────┘
 ```
+
+> **Kiến trúc:** ESP32-CAM 2 KHÔNG điều khiển servo trực tiếp (tránh xung đột timer
+> LEDC với camera). Nó chỉ là **cầu nối**: nhận lệnh từ server qua WiFi rồi đẩy
+> xuống Arduino UNO qua UART. UNO lo toàn bộ servo + relay + bơm.
 
 ## Pin assignments
 
-### ESP32-CAM 2 (CONTROL node)
+### ESP32-CAM 2 (CONTROL / BRIDGE node)
 | GPIO | Vai trò |
 |------|---------|
-| 14   | Servo PAN PWM signal |
-| 15   | Servo TILT PWM signal |
-| 13   | Pump trigger output (digital, → Arduino D7) |
+| 13   | UART TX (3.3V) → Arduino UNO D2 (gửi lệnh "pan,tilt,pump,burst\n") |
 | 0, 26, 27, 35, 34, 39, 36, 21, 19, 18, 5, 25, 23, 22, 32, 4 | Camera (đừng đụng) |
 
 ### Arduino UNO
 | Pin | Vai trò |
 |-----|---------|
-| D7  | INPUT digital từ ESP32-CAM 2 GPIO13 |
-| D8  | OUTPUT điều khiển coil relay (active HIGH default) |
-| D9  | OUTPUT buzzer (tuỳ chọn) |
+| D2  | SoftwareSerial RX ← ESP32-CAM 2 GPIO13 (nhận lệnh, 9600 baud) |
+| D3  | SoftwareSerial TX (không dùng, thư viện yêu cầu khai báo) |
+| D9  | Servo PAN (MG90S — trục ngang) |
+| D10 | Servo TILT (MG90 — trục dọc) |
+| D7  | Relay điều khiển máy bơm (active HIGH default) |
+| D8  | Buzzer (tuỳ chọn) |
 | GND | **PHẢI nối chung** với ESP32-CAM 2 GND |
 
 ## Wiring
 
 ```
-ESP32-CAM 2 GPIO13  ───────►  Arduino D7
-ESP32-CAM 2 GND     ───────►  Arduino GND        (BẮT BUỘC)
-Arduino D8          ───────►  Relay IN
+ESP32-CAM 2 GPIO13  ───────►  Arduino D2        (UART, 1 chiều, 3.3V→5V an toàn)
+ESP32-CAM 2 GND     ───────►  Arduino GND       (BẮT BUỘC)
+Arduino D9          ───────►  Servo PAN  signal (MG90S)
+Arduino D10         ───────►  Servo TILT signal (MG90)
+Arduino D7          ───────►  Relay IN
+Arduino D8          ───────►  Buzzer (+)
 Relay COM/NO        ───────►  Pump 12V circuit
-Servo PAN  signal   ───────►  ESP32-CAM 2 GPIO14
-Servo TILT signal   ───────►  ESP32-CAM 2 GPIO15
-Servo VCC (5V)      ───────►  External 5V supply (đừng cấp từ ESP)
-Servo GND           ───────►  External 5V GND + ESP GND
+Servo VCC (5V)      ───────►  Buck 5V riêng (đừng cấp từ chân 5V UNO)
+Servo GND           ───────►  Buck GND + UNO GND chung
 ```
 
-> ⚠️ **Cấp điện servo riêng**: Servo MG996R kéo dòng 1-2A khi tải, ESP32 không kham nổi. Dùng nguồn 5V 3A riêng, GND nối chung với ESP.
+> ⚠️ **CHỈ nối 1 chiều ESP2 TX → UNO RX.** KHÔNG nối UNO TX (5V) vào ESP32 (3.3V)
+> kẻo cháy ESP. Vì UNO không cần gửi ngược lại nên bỏ luôn chiều đó.
+>
+> ⚠️ **Cấp điện servo riêng** qua buck 5V, GND nối chung. MG90 nhẹ nhưng dòng đỉnh
+> vẫn ~0.8A/con, cấp từ UNO sẽ gây reset.
+
+## Nguồn điện (2× 18650)
+
+```
+2× 18650 NỐI TIẾP (2S = 7.4V)
+   ├→ Arduino UNO (Vin 7.4V)
+   ├→ Buck 5V  → 2× ESP32-CAM + Relay module
+   └→ Buck 5V  → Servo PAN + Servo TILT   (+ tụ 2200µF)
+
+Máy bơm → nguồn 12V RIÊNG (qua relay, GND chung)
+```
+
+- Servo MG90/MG90S nhẹ → pin 18650 thường (loại 5A) là đủ, không cần high-drain.
+- Chạy được ~7-8 giờ với 2 pin 3000mAh.
 
 ## Flow điều khiển
 
@@ -77,13 +102,14 @@ Servo GND           ───────►  External 5V GND + ESP GND
    - **Distance compensation**: cộng `θ = ½ arcsin(gR/v²)` vào tilt (nâng nòng lên)
    - Nếu target ở giữa frame **3 frame liên tiếp** + đã qua cooldown 4s → set `pump=true, burst_ms=2500`
 4. Server `POST /control` đến ESP32-CAM 2 với `{pan, tilt, pump, burst_ms}`
-5. **ESP32-CAM 2**:
-   - `servoPan.write(pan)`, `servoTilt.write(tilt)`
-   - Nếu `pump=true` → digital HIGH chân GPIO13 trong `burst_ms` mili giây → tự động LOW
+5. **ESP32-CAM 2** (cầu nối): chuyển thành 1 dòng UART `"pan,tilt,pump,burst_ms\n"`
+   gửi xuống UNO qua GPIO13 (9600 baud)
 6. **Arduino UNO**:
-   - Đọc D7 (debounce 30ms)
-   - HIGH → đóng relay → bơm chạy + buzzer kêu
-   - LOW → mở relay → bơm dừng
+   - Parse dòng lệnh
+   - `servoPan.write(pan)`, `servoTilt.write(tilt)` (tự clamp góc an toàn)
+   - Nếu `pump=1` → đóng relay → bơm chạy + buzzer kêu, tự tắt sau `burst_ms` (tối đa 5s)
+   - Nếu `pump=0` → mở relay → bơm dừng
+   - **An toàn**: mất lệnh từ ESP2 quá 8s → tự tắt bơm
 
 ## Công thức bù góc
 
