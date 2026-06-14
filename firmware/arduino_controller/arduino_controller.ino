@@ -2,8 +2,8 @@
  * FireGuard - ARDUINO UNO (Turret Controller)
  *
  * Nhan lenh tu ESP32-CAM 2 qua UART (SoftwareSerial), dieu khien:
- *   - 2 servo MG90:  PAN (ngang) + TILT (doc)
- *   - Relay may bom nuoc
+ *   - Servo PAN  (SG90S) + Servo TILT (SG90), quay tu tu (muot)
+ *   - Relay may bom nuoc 24V
  *   - Buzzer canh bao (keu khi bom chay)
  *
  * Giao thuc UART (ESP2 -> UNO, 9600 baud, moi lenh 1 dong):
@@ -14,9 +14,9 @@
  * Pin map (Arduino UNO):
  *   D2  <- SoftwareSerial RX  <- ESP32-CAM2 GPIO13 (TX, 3.3V)  *** chi 1 chieu ***
  *   D3  -> SoftwareSerial TX  (khong dung, thu vien yeu cau khai bao)
- *   D9  -> Servo PAN  (MG90S - truc ngang)
- *   D10 -> Servo TILT (MG90  - truc doc)
- *   D7  -> Relay (may bom).  RELAY_ACTIVE_HIGH=true: HIGH = bom chay
+ *   D9  -> Servo PAN  (SG90S - truc ngang, quay trai/phai)
+ *   D10 -> Servo TILT (SG90  - truc doc,  ngua len/cui xuong)
+ *   D7  -> Relay (may bom 24V). HIGH = bom chay
  *   D8  -> Buzzer (tuy chon)
  *   GND <-> ESP32-CAM2 GND   *** BAT BUOC chung GND ***
  *
@@ -32,9 +32,9 @@
 /* ================= PIN ================= */
 #define PIN_RX_FROM_ESP  2     // SoftwareSerial RX  <- ESP2 GPIO13
 #define PIN_TX_DUMMY     3     // SoftwareSerial TX  (khong dung)
-#define PIN_SERVO_PAN    9     // MG90S - truc ngang
-#define PIN_SERVO_TILT   10    // MG90  - truc doc
-#define PIN_RELAY        7     // Relay bom
+#define PIN_SERVO_PAN    9     // SG90S - truc ngang (pan, quay trai/phai)
+#define PIN_SERVO_TILT   10    // SG90  - truc doc  (tilt, ngua/cui)
+#define PIN_RELAY        7     // Relay - may bom
 #define PIN_BUZZER       8     // Buzzer
 
 #define RELAY_ACTIVE_HIGH true // false neu module relay la active-LOW
@@ -52,13 +52,20 @@
 #define BURST_MAX_MS      5000UL   // bom toi da 5s/lan du lenh gui dai hon
 #define CMD_TIMEOUT_MS    8000UL   // mat lenh > 8s -> tat bom (an toan)
 
+/* ================= SERVO MUOT (smooth) ================= */
+#define SERVO_STEP_MS     15       // 15ms / 1 do  -> ~66 do/giay (muot, khong giat)
+
 /* ================= STATE ================= */
 SoftwareSerial espSerial(PIN_RX_FROM_ESP, PIN_TX_DUMMY);
 Servo servoPan;
 Servo servoTilt;
 
-int  curPan  = PAN_HOME;
-int  curTilt = TILT_HOME;
+int  curPan     = PAN_HOME;   // goc dang xuat ra servo
+int  curTilt    = TILT_HOME;
+int  targetPan  = PAN_HOME;   // goc muc tieu (servo tu tu tien toi)
+int  targetTilt = TILT_HOME;
+unsigned long lastServoStep = 0;
+
 bool pumpOn  = false;
 
 unsigned long pumpUntilMs = 0;      // 0 = bom tat
@@ -93,11 +100,38 @@ void setPump(bool on) {
   Serial.println(on ? F("ON  (bom chay)") : F("OFF (bom tat)"));
 }
 
-void applyServos(int pan, int tilt) {
-  pan  = clampInt(pan,  PAN_MIN,  PAN_MAX);
-  tilt = clampInt(tilt, TILT_MIN, TILT_MAX);
-  if (pan != curPan)  { servoPan.write(pan);   curPan  = pan; }
-  if (tilt != curTilt){ servoTilt.write(tilt); curTilt = tilt; }
+// Dat goc muc tieu - servo se tu tu tien toi trong loop (khong giat)
+void setServoTargets(int pan, int tilt) {
+  targetPan  = clampInt(pan,  PAN_MIN,  PAN_MAX);
+  targetTilt = clampInt(tilt, TILT_MIN, TILT_MAX);
+}
+
+// Goi lien tuc trong loop: moi SERVO_STEP_MS dich 1 do ve phia target
+void updateServosSmooth() {
+  if (millis() - lastServoStep < SERVO_STEP_MS) return;
+  lastServoStep = millis();
+  if      (curPan  < targetPan)  { curPan++;  servoPan.write(curPan); }
+  else if (curPan  > targetPan)  { curPan--;  servoPan.write(curPan); }
+  if      (curTilt < targetTilt) { curTilt++; servoTilt.write(curTilt); }
+  else if (curTilt > targetTilt) { curTilt--; servoTilt.write(curTilt); }
+}
+
+// Luc khoi dong: quay TU TU ve trung tam (blocking, chi 1 lan trong setup)
+void smoothHomeStartup() {
+  // Pan ve giua luon (servo attach mac dinh da ~giua nen khong giat manh).
+  // Tilt bat dau chuc thap roi TU TU nang len trung tam -> muot + an toan.
+  curPan  = PAN_HOME;
+  curTilt = TILT_MIN;
+  servoPan.write(curPan);
+  servoTilt.write(curTilt);
+  delay(500);                       // cho servo on dinh o diem bat dau
+  while (curTilt < TILT_HOME) {     // tu tu nang len giua
+    curTilt++;
+    servoTilt.write(curTilt);
+    delay(SERVO_STEP_MS);
+  }
+  targetPan  = PAN_HOME;
+  targetTilt = TILT_HOME;
 }
 
 /* ================= PARSE 1 LENH ================= */
@@ -117,8 +151,8 @@ void handleCommand(char *line) {
 
   lastCmdMs = millis();
 
-  // 1) Servo
-  applyServos(pan, tilt);
+  // 1) Servo - dat muc tieu, loop se dich tu tu (muot)
+  setServoTargets(pan, tilt);
 
   // 2) Bom
   if (pump == 1) {
@@ -141,7 +175,7 @@ void setup() {
 
   servoPan.attach(PIN_SERVO_PAN);
   servoTilt.attach(PIN_SERVO_TILT);
-  applyServos(PAN_HOME, TILT_HOME);
+  smoothHomeStartup();           // quay TU TU ve trung tam khi cap dien
 
   Serial.begin(115200);          // USB debug
   espSerial.begin(9600);         // link tu ESP2
@@ -169,14 +203,17 @@ void loop() {
     }
   }
 
-  // 2) Tu tat bom khi het burst
+  // 2) Dich servo tu tu ve muc tieu (muot, khong giat)
+  updateServosSmooth();
+
+  // 3) Tu tat bom khi het burst
   if (pumpUntilMs != 0 && millis() >= pumpUntilMs) {
     pumpUntilMs = 0;
     setPump(false);
     Serial.println(F("[PUMP] Burst xong -> OFF"));
   }
 
-  // 3) An toan: mat lenh qua lau -> tat bom (servo giu nguyen)
+  // 4) An toan: mat lenh qua lau -> tat bom (servo giu nguyen)
   if (pumpOn && (millis() - lastCmdMs > CMD_TIMEOUT_MS)) {
     pumpUntilMs = 0;
     setPump(false);

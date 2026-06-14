@@ -1,0 +1,209 @@
+================================================================================
+              FIREGUARD - SO DO LAP RAP & LUU Y KHI LAP
+================================================================================
+
+  3 BO XU LY:
+    - ESP32-CAM 1  : camera chinh (chi gui anh)
+    - ESP32-CAM 2  : camera phu + cau noi lenh xuong UNO
+    - Arduino UNO  : dieu khien 2 servo + relay bom
+
+  CO CAU:
+    - Servo SG90S  : PAN  (quay ngang trai/phai)
+    - Servo SG90   : TILT (ngua len / cui xuong)
+    - Relay        : dong/ngat may bom 24V
+    - May bom 24V  : phun nuoc
+
+  NGUON:
+    - UPS 5V (2x 18650, co sac) : nuoi phan dieu khien
+    - 6S 18650 (24V)            : nuoi rieng may bom
+
+
+================================================================================
+  1. SO DO TONG THE
+================================================================================
+
+        WiFi chung (hotspot laptop hoac router 2.4GHz)
+        |                                          |
+   [ESP32-CAM 1] --img--> [LAPTOP SERVER] <--img-- [ESP32-CAM 2]
+                              |  Flask + YOLO          |
+                              |  stereo + ngam         | GPIO13 (TX, 3.3V)
+                              |                        | "pan,tilt,pump,burst"
+                              +--- /control ---------->|
+                                   {pan,tilt,pump}     v  D2 (RX)
+                                                  [ARDUINO UNO]
+                                                    |  D9  --> Servo PAN  (SG90S)
+                                                    |  D10 --> Servo TILT (SG90)
+                                                    |  D8  --> Buzzer
+                                                    |  D7  --> Relay IN
+                                                    +-----------+
+                                                                v
+                                                          [ RELAY ]
+                                                          COM --- NO
+                                                           |       |
+                              6S(+)--[Diode 1N5408]--------+       +--> Bom(+)
+                              6S(-)----------------------------------> Bom(-)
+
+
+================================================================================
+  2. DAY TIN HIEU
+================================================================================
+
+   TU                  -->  DEN              GHI CHU
+   -------------------------------------------------------------------
+   ESP32-CAM2 GPIO13   -->  Arduino D2       UART 1 chieu, 3.3V->5V OK
+   Arduino D9          -->  Servo PAN  (cam vang/trang signal)  SG90S
+   Arduino D10         -->  Servo TILT (cam vang/trang signal)  SG90
+   Arduino D7          -->  Relay IN
+   Arduino D8          -->  Buzzer (+)
+
+   *** KHONG noi Arduino TX (D1/5V) vao ESP32 -> chay ESP! Chi 1 chieu. ***
+
+
+================================================================================
+  3. DAY NGUON - PHAN DIEU KHIEN (5V tu UPS)
+================================================================================
+
+   UPS 5V (OUT)  -->  cap cho:
+   -------------------------------------------------------------------
+   - Arduino UNO   : qua cong USB (KHONG cam chan Vin)
+   - ESP32-CAM 1   : chan 5V + GND
+   - ESP32-CAM 2   : chan 5V + GND
+   - Relay module  : chan VCC (coil) + GND
+   - Servo SG90S   : do day VCC qua BUCK 5V rieng + tu 2200uF
+   - Servo SG90    : chung rail servo voi SG90S
+
+   Adapter 5V (cam dien) --> ngo SAC cua UPS
+        -> Co dien: dung dien + sac pin
+        -> Mat dien: tu chuyen sang pin (khong gian doan)
+
+
+================================================================================
+  4. DAY NGUON - MAY BOM (24V, CACH LY RIENG)
+================================================================================
+
+   6S 18650 (24V)  --(+)--> [Diode 1N5408] --> Bom (+)
+                   --(-)----------------------> Bom (-) qua relay
+
+   Chi tiet qua relay:
+       6S(+) --[Diode]--> Bom(+)
+       Bom(-) --> Relay NO
+       Relay COM --> 6S(-)
+
+   Diode 1N5408: VACH TRANG (cathode) ve cuc (+) cua bom.
+   (Lap nguoc -> chap chay diode!)
+
+   *** Mach 24V KHONG noi chung GND voi mach 5V. Relay da cach ly. ***
+
+
+================================================================================
+  5. GND (DAT) - CUC KY QUAN TRONG
+================================================================================
+
+   NOI CHUNG GND (mach 5V):
+       UPS 5V GND + CAM1 GND + CAM2 GND + UNO GND
+       + Servo GND + Relay coil GND
+       --> TAT CA chung 1 diem GND.
+       Khong co cai nay: UART loan, servo giat, lenh sai.
+
+   TACH RIENG GND (mach 24V):
+       6S(-) cua may bom KHONG noi vao GND 5V (relay cach ly).
+
+
+================================================================================
+  6. PIN MAP TUNG BOARD
+================================================================================
+
+   --- ESP32-CAM 1 ---
+       Chi dung camera + WiFi. Khong noi gi them.
+       Cap nguon: 5V + GND tu UPS.
+
+   --- ESP32-CAM 2 ---
+       GPIO13  -> UART TX  -> Arduino D2
+       5V, GND -> tu UPS
+       (cac chan con lai la camera, dung dung)
+
+   --- ARDUINO UNO ---
+       D2   <- UART RX  <- ESP2 GPIO13
+       D3   -> (khong dung)
+       D9   -> Servo PAN  SG90S
+       D10  -> Servo TILT SG90
+       D7   -> Relay IN
+       D8   -> Buzzer
+       USB  <- nguon 5V tu UPS
+       GND  <-> chung GND 5V
+
+
+================================================================================
+  7. LAP CO KHI (GIAN TURRET)
+================================================================================
+
+   Tang xep:
+        [ CAMERA 1 + CAMERA 2 ]   <- cach nhau 15cm (stereo)
+        [ Servo SG90 - TILT    ]   <- ngua/cui ca cum camera
+        [ Servo SG90S - PAN    ]   <- quay ngang ca cum
+        [ De / chan dung        ]
+
+   LUU Y:
+   - Camera vuong goc truc xoay pan (nhin ngang ra truoc).
+   - Camera + voi phun NHIN CUNG HUONG (dong truc) -> "giua khung = trung".
+   - 2 camera cach nhau 15cm, song song, gan chac (stereo).
+   - Tilt (SG90 banh rang nhua) YEU: voi phun phai NHE, ong silicon mem.
+   - Dat truc tilt ngay TRONG TAM voi phun -> servo do phai ganh trong luc.
+   - Them VONG BI (bearing) do duoi mam xoay pan -> servo SG90S chi xoay,
+     khong ganh trong luong ca cum.
+
+
+================================================================================
+  8. THU TU LAP & TEST (lam tung buoc, dung lap het roi moi cam dien)
+================================================================================
+
+   B1. Lap co khi gian turret (servo + camera + voi) cho chac.
+   B2. Nap code 3 board (sua ssid/password/IP truoc khi nap).
+       - Nap UNO: RUT day D2 ra, nap xong cam lai.
+   B3. Cap nguon 5V cho UNO + 2 servo (CHUA noi bom 24V).
+       - Cam dien -> servo phai TU TU ve trung tam (khong giat manh).
+   B4. Test chieu servo: de lua/vat sang phai khung hinh
+       -> servo phai quay dung huong dua ve giua.
+       -> Sai huong: doi dau trong turret_controller.py.
+   B5. Test camera: vung tay NGANG truoc cam
+       -> trong anh phai di NGANG (khong phai doc).
+       -> Neu di doc: camera lap xoay 90, can doi truc pan/tilt trong code.
+   B6. Lap mach bom 24V (6S + diode + relay). Do dong ho dam bao:
+       - Diode dung chieu (vach ve cuc +).
+       - 6S ra ~22-25V.
+   B7. Test bom: gui lenh pump=1 -> relay keu tach, bom chay 2-3s roi TU TAT.
+   B8. Test mat dien UPS: rut adapter -> he thong KHONG duoc tat
+       (2 ESP khong reset). Neu reset -> them tu 1000uF chan 5V moi ESP.
+
+
+================================================================================
+  9. CHECKLIST TRUOC KHI CAM DIEN (doc lai 1 lan)
+================================================================================
+
+   [ ] GND mach 5V da noi chung HET (UPS, 2 cam, UNO, servo, relay coil)
+   [ ] ESP2 GPIO13 -> UNO D2 (chi 1 chieu, KHONG noi nguoc)
+   [ ] Servo cap qua BUCK 5V rieng + tu 2200uF (khong lay tu chan UNO)
+   [ ] Diode 1N5408 dung chieu (vach trang ve cuc + bom)
+   [ ] Mach bom 24V tach rieng, khong dung GND voi mach 5V
+   [ ] UNO cap qua USB (khong cam Vin)
+   [ ] Buck servo da chinh dung 5.0V (do dong ho truoc khi cam servo)
+   [ ] ssid / password / IP server da sua dung trong code 3 board
+   [ ] 6S co BMS bao ve (chong lech ap, phong chay)
+
+
+================================================================================
+  10. LOI THUONG GAP
+================================================================================
+
+   - ESP reset lien tuc      -> servo an dong, them tu 2200uF; tach rail servo
+   - Servo giat/keu o tilt   -> voi qua nang, SG90 yeu -> nhe voi / len MG996R
+   - Servo quay nguoc huong  -> doi dau trong turret_controller.py
+   - Bom khong chay          -> kiem tra relay keu khong, diode dung chieu,
+                                6S con dien, GND coil relay co noi UNO khong
+   - Khong ket noi server    -> sai IP / khac WiFi / WiFi 5GHz (ESP chi 2.4GHz)
+   - Anh di doc khi vay ngang-> camera lap xoay 90, doi truc pan/tilt trong code
+   - Bom chay mai khong tat  -> kiem tra burst_ms; UNO co chot tu tat 5s
+
+================================================================================
+                          HET - FireGuard Turret
+================================================================================
