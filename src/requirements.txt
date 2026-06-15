@@ -1,22 +1,26 @@
 # ============================================================
 # FireGuard AI - Python dependencies (server)
 # Cai dat:  pip install -r requirements.txt
+# Version da PIN theo may chay tot -> may nao cai cung giong het,
+# tranh "may toi chay duoc may khac thi khong".
 # ============================================================
 
 # Web server
 flask>=3.0.0
 
-# AI detection
-ultralytics>=8.3.0          # YOLOv8
-sahi>=0.11.0                # Slicing Aided Hyper Inference (phat hien lua nho)
+# AI detection (PIN chinh xac de detect giong nhau moi may)
+ultralytics==8.4.21         # YOLOv8 - pin de hanh vi detect dong nhat
+sahi==0.11.36               # Slicing Aided Hyper Inference (phat hien lua nho)
 
-# Deep learning backend (ultralytics + sahi can torch)
-torch>=2.0.0
-torchvision>=0.15.0
+# Deep learning backend
+# Luu y: torch ban CUDA chon qua --index-url (xem setup_gpu.bat).
+# Khong pin cung torch vi bien the CUDA khac nhau tung may.
+torch>=2.6.0
+torchvision>=0.21.0
 
-# Image / numeric
-opencv-python>=4.8.0
-numpy>=1.24.0
+# Image / numeric (PIN de tranh lech behavior)
+opencv-python==4.11.0.86
+numpy==2.4.2
 pillow>=10.0.0
 
 # Hardware / network
