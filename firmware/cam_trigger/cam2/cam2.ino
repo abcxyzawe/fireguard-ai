@@ -51,7 +51,7 @@ HardwareSerial UnoSerial(1);     // UART1 cua ESP32
 /* ================= CONFIG ================= */
 const char* ssid     = "Op";
 const char* password = "12345678";
-const char* serverHost = "10.199.56.144";  // IP laptop chay server
+const char* serverHost = "192.168.137.1";  // hotspot laptop (IP co dinh)
 const int   serverPort = 5000;
 
 #define CAPTURE_INTERVAL_MS 500

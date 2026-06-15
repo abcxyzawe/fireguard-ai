@@ -28,7 +28,7 @@ const char* password = "12345678";
 
 // === DOI IP THEO MAY CHAY SERVER ===
 // Hotspot laptop: 192.168.137.1 | Cung WiFi router: IP may tinh
-const char* serverURL = "http://10.199.56.144:5000/upload?cam=cam1";
+const char* serverURL = "http://192.168.137.1:5000/upload?cam=cam1";  // hotspot laptop (IP co dinh)
 
 #define CAPTURE_INTERVAL_MS 100  // 10 FPS
 #define WIFI_TIMEOUT_MS 15000    // 15s timeout
