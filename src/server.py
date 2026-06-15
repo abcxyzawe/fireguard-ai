@@ -107,6 +107,11 @@ last_detection_lock = threading.Lock()
 image_counter = 0
 image_counter_lock = threading.Lock()
 
+# Frame-drop guard: chi cho 1 detection/cam chay cung luc.
+# Tranh dong thread khi CPU cham (10 FPS gui nhung detect 1-2s/anh).
+processing_flags = {}            # cam_id -> True neu dang detect
+processing_flags_lock = threading.Lock()
+
 # Latest frame for MJPEG stream - per camera
 latest_frames = {cam: None for cam in CAM_IDS}
 latest_frame_locks = {cam: threading.Lock() for cam in CAM_IDS}
@@ -877,6 +882,15 @@ def _process_upload_async(img, filename, filepath, cam_id):
           f"fire:{n_fire} smoke:{n_smoke} | mode:{mode_name}")
 
 
+def _process_upload_guarded(img, filename, filepath, cam_id):
+    """Chay detect roi LUON xoa processing flag (du loi) -> cho frame sau."""
+    try:
+        _process_upload_async(img, filename, filepath, cam_id)
+    finally:
+        with processing_flags_lock:
+            processing_flags[cam_id] = False
+
+
 @app.route('/upload', methods=['POST'])
 def upload_image():
     """Nhan anh JPEG tu ESP32-CAM - tra ve ngay, detect chay background."""
@@ -902,12 +916,20 @@ def upload_image():
 
     cam_id = request.args.get("cam", "cam1")
 
-    # Detect chay background - ESP32 khong can doi
-    threading.Thread(
-        target=_process_upload_async,
-        args=(img.copy(), filename, filepath, cam_id),
-        daemon=True
-    ).start()
+    # Frame-drop: chi detect neu cam nay khong dang ban.
+    # Tren CPU cham, ESP gui nhanh hon detect -> bo bot frame, tranh dong thread.
+    with processing_flags_lock:
+        busy = processing_flags.get(cam_id, False)
+        if not busy:
+            processing_flags[cam_id] = True
+
+    if not busy:
+        threading.Thread(
+            target=_process_upload_guarded,
+            args=(img.copy(), filename, filepath, cam_id),
+            daemon=True
+        ).start()
+    # else: dang detect frame truoc -> bo qua frame nay (ESP van nhan response OK)
 
     # Tra ket qua truoc do cho ESP32 (neu co)
     with last_detection_lock:
