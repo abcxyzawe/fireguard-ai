@@ -1,9 +1,24 @@
+# ============================================================
+# FireGuard AI - Python dependencies (server)
+# Cai dat:  pip install -r requirements.txt
+# ============================================================
+
+# Web server
 flask>=3.0.0
-ultralytics>=8.3.0
-opencv-python>=4.8.0
-numpy>=1.24.0
-pyserial>=3.5
+
+# AI detection
+ultralytics>=8.3.0          # YOLOv8
+sahi>=0.11.0                # Slicing Aided Hyper Inference (phat hien lua nho)
+
+# Deep learning backend (ultralytics + sahi can torch)
 torch>=2.0.0
 torchvision>=0.15.0
+
+# Image / numeric
+opencv-python>=4.8.0
+numpy>=1.24.0
 pillow>=10.0.0
-requests>=2.31.0
+
+# Hardware / network
+pyserial>=3.5               # giao tiep Serial voi Arduino (neu dung)
+requests>=2.31.0            # poll cam2 + gui lenh turret

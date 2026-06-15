@@ -49,20 +49,35 @@ Kiem_soat_lua/
 
 ## 🚀 Cách chạy
 
-### 1. Server (Python + YOLO)
+### Bước 1: Clone về
 
 ```bash
-# Cài dependencies
-pip install flask ultralytics opencv-python numpy sahi pyserial
+git clone https://github.com/abcxyzawe/fireguard-ai.git
+cd fireguard-ai
+```
 
-# Tải model best.pt vào models/ (link Drive sẽ chia sẻ)
+### Bước 2: Setup tự động (cài thư viện + tải model)
 
-# Chạy
+**Windows:** double-click `setup.bat` (hoặc gõ `setup.bat`)
+
+**Mac / Linux / Raspberry Pi:**
+```bash
+bash setup.sh
+```
+
+→ Script tự `pip install` + tải `models/best.pt` từ GitHub Release. Khỏi cài tay.
+
+### Bước 3: Chạy server
+
+```bash
 cd src
 python server.py
 ```
 
 Server: `http://localhost:5000`
+
+> Model `best.pt` cũng tải thủ công được tại:
+> [Releases](https://github.com/abcxyzawe/fireguard-ai/releases/tag/v1.0) → bỏ vào `models/`
 
 ### 2. ESP32-CAM (cam1 - push mode)
 
