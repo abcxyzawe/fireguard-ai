@@ -85,6 +85,7 @@ config = load_config("config.json")
 model = None
 model_names = {}
 model_lock = threading.Lock()
+RESOLVED_DEVICE = "cpu"   # tu dong nhan o init_model: GPU neu co, khong thi CPU
 
 # Serial
 ser = None
@@ -128,7 +129,7 @@ sahi_model = None
 
 def init_model():
     """Load YOLO model + SAHI model for small fire detection."""
-    global model, model_names, sahi_model
+    global model, model_names, sahi_model, RESOLVED_DEVICE
     if YOLO is None:
         print("[MODEL] ultralytics not installed, skipping YOLO")
         return False
@@ -138,6 +139,20 @@ def init_model():
         print(f"[MODEL] Weights not found: {weights}")
         return False
 
+    # === Tu dong nhan device: co GPU/CUDA thi dung, khong thi CPU ===
+    device_cfg = config["model"].get("device", "cpu")
+    try:
+        import torch
+        cuda_ok = torch.cuda.is_available()
+    except Exception:
+        cuda_ok = False
+    if isinstance(device_cfg, int) and not cuda_ok:
+        print("[MODEL] Khong tim thay GPU/CUDA -> tu chuyen sang CPU")
+        RESOLVED_DEVICE = "cpu"
+    else:
+        RESOLVED_DEVICE = device_cfg
+    print(f"[MODEL] Device: {RESOLVED_DEVICE} (CUDA available: {cuda_ok})")
+
     try:
         model = YOLO(weights)
         model_names = getattr(model, 'names', {}) or {}
@@ -146,7 +161,7 @@ def init_model():
 
         # Init SAHI for small fire detection
         if SAHI_AVAILABLE:
-            device_str = config["model"].get("device", "cpu")
+            device_str = RESOLVED_DEVICE
             sahi_device = f"cuda:{device_str}" if isinstance(device_str, int) else str(device_str)
             sahi_model = AutoDetectionModel.from_pretrained(
                 model_type='yolov8',
@@ -362,7 +377,7 @@ def detect_single_image(img):
     env_brightness = measure_brightness(img)
     yolo_conf = mode_config.get("yolo_conf", 0.25)
     imgsz = config["model"].get("imgsz", 640)
-    device = config["model"].get("device")
+    device = RESOLVED_DEVICE
 
     try:
         with model_lock:
@@ -489,7 +504,7 @@ def detect_frame(img, cam_id="cam1"):
 
     yolo_conf = mode_config.get("yolo_conf", 0.25)
     imgsz = config["model"].get("imgsz", 640)
-    device = config["model"].get("device")
+    device = RESOLVED_DEVICE
 
     try:
         with model_lock:
