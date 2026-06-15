@@ -1601,7 +1601,7 @@ footer{text-align:center;padding:16px;color:#bbb;font-size:0.7rem;margin-top:30p
     <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
       <div class="esp-card" style="text-align:center"><h3>Live Stream + Tam ngam</h3>
         <div id="esp-canvas-wrap" style="position:relative;display:inline-block;cursor:crosshair">
-          <img id="esp-img" class="esp-img" src="/stream" onerror="this.src='/latest'" style="display:block;max-width:100%;max-height:400px">
+          <img id="esp-img" class="esp-img" style="display:block;max-width:100%;max-height:400px;background:#111;min-height:200px">
           <canvas id="esp-overlay" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none"></canvas>
           <div id="crosshair" style="position:absolute;left:50%;top:50%;width:30px;height:30px;border:2px solid #0f0;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:10;box-shadow:0 0 8px #0f0">
             <div style="position:absolute;top:50%;left:0;right:0;height:1px;background:#0f0"></div>
@@ -1732,6 +1732,16 @@ let captureList=[];
 const wrap=document.getElementById('esp-canvas-wrap');
 const ch=document.getElementById('crosshair');
 const espImg=document.getElementById('esp-img');
+
+// Tai anh /latest dinh ky (tu nhip - khong chong connection nhu MJPEG).
+// Chi tai anh tiep theo khi anh truoc da load xong -> khong nghen.
+function refreshEspImg(){
+  const next=new Image();
+  next.onload=()=>{espImg.src=next.src;setTimeout(refreshEspImg,300);};
+  next.onerror=()=>{setTimeout(refreshEspImg,1500);};  // chua co anh -> thu lai sau
+  next.src='/latest?t='+Date.now();
+}
+refreshEspImg();
 
 function updateCrosshair(){
   ch.style.left=crossX+'%';
