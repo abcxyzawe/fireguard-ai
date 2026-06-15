@@ -6,24 +6,23 @@
  *   - Nhan lenh tu server qua HTTP POST /control  {pan, tilt, pump, burst_ms}
  *   - CHUYEN TIEP lenh xuong Arduino UNO qua UART (GPIO13 -> UNO D2)
  *
- * KHONG dieu khien servo truc tiep nua -> UNO lo servo + relay + bom
+ * KHONG dieu khien servo truc tiep -> UNO lo servo + relay + bom
  * (tranh xung dot timer LEDC giua camera va servo tren ESP32-CAM).
  *
- * Pin map:
- *   GPIO 13 -> UART TX  (3.3V)  ->  Arduino UNO D2 (SoftwareSerial RX)
- *   GND     <->                     Arduino UNO GND   *** BAT BUOC chung GND ***
+ * *** KHONG can thu vien ArduinoJson - tu parse JSON bang tay ***
  *
- * Giao thuc UART (ESP2 -> UNO, 9600 baud, moi lenh 1 dong):
+ * Pin map:
+ *   GPIO 13 -> UART TX (3.3V) -> Arduino UNO D2 (SoftwareSerial RX)
+ *   GND     <->                  Arduino UNO GND   *** BAT BUOC chung GND ***
+ *
+ * Giao thuc UART (ESP2 -> UNO, 9600 baud):
  *   "<pan>,<tilt>,<pump>,<burst_ms>\n"
- *   vd: "90,60,1,2500\n"  = pan 90, tilt 60, bom BAT trong 2500ms
- *       "90,60,0,0\n"     = pan 90, tilt 60, bom TAT
  * ========================================================================== */
 
 #include "esp_camera.h"
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include <WebServer.h>
-#include <ArduinoJson.h>
 
 /* ================= CAMERA PINS (AI THINKER) ================= */
 #define PWDN_GPIO_NUM     32
@@ -47,7 +46,7 @@
 /* ================= UART -> ARDUINO UNO ================= */
 #define PIN_UART_TX  13          // ESP2 GPIO13 -> UNO D2 (RX). RX khong dung.
 #define UNO_BAUD     9600
-HardwareSerial UnoSerial(1);     // dung UART1 cua ESP32
+HardwareSerial UnoSerial(1);     // UART1 cua ESP32
 
 /* ================= CONFIG ================= */
 const char* ssid     = "Op";
@@ -55,12 +54,11 @@ const char* password = "12345678";
 const char* serverHost = "10.199.56.144";  // IP laptop chay server
 const int   serverPort = 5000;
 
-#define CAPTURE_INTERVAL_MS 500   // 2 FPS de ghep stereo voi cam1
+#define CAPTURE_INTERVAL_MS 500
 #define WIFI_TIMEOUT_MS    15000
 #define WIFI_RETRY_MS      10000
 #define HTTP_TIMEOUT_MS     5000
 
-// Gioi han goc (chi de bao cao /status; UNO van tu clamp lai)
 #define PAN_HOME   90
 #define TILT_HOME  90
 
@@ -74,15 +72,45 @@ int  lastPan  = PAN_HOME;
 int  lastTilt = TILT_HOME;
 bool lastPump = false;
 
+/* ================= PARSE JSON BANG TAY (khong can thu vien) ================= */
+// Lay so nguyen cho 1 key trong chuoi JSON. VD: jsonInt(body, "pan", 90)
+long jsonInt(const String& s, const char* key, long defVal) {
+  String pat = String("\"") + key + "\"";
+  int k = s.indexOf(pat);
+  if (k < 0) return defVal;
+  int colon = s.indexOf(':', k + pat.length());
+  if (colon < 0) return defVal;
+  int i = colon + 1;
+  while (i < (int)s.length() && (s[i] == ' ' || s[i] == '\t')) i++;
+  bool neg = false;
+  if (i < (int)s.length() && s[i] == '-') { neg = true; i++; }
+  long val = 0; bool got = false;
+  while (i < (int)s.length() && isDigit(s[i])) { val = val * 10 + (s[i] - '0'); i++; got = true; }
+  if (!got) return defVal;
+  return neg ? -val : val;
+}
+
+// Lay boolean (true/false hoac 1/0) cho 1 key
+bool jsonBool(const String& s, const char* key, bool defVal) {
+  String pat = String("\"") + key + "\"";
+  int k = s.indexOf(pat);
+  if (k < 0) return defVal;
+  int colon = s.indexOf(':', k + pat.length());
+  if (colon < 0) return defVal;
+  int i = colon + 1;
+  while (i < (int)s.length() && (s[i] == ' ' || s[i] == '\t')) i++;
+  if (s[i] == 't' || s[i] == '1') return true;
+  if (s[i] == 'f' || s[i] == '0') return false;
+  return defVal;
+}
+
 /* ================= GUI LENH XUONG UNO ================= */
 void sendToUno(int pan, int tilt, bool pump, int burst_ms) {
-  // Dinh dang: "pan,tilt,pump,burst_ms\n"
   UnoSerial.print(pan);    UnoSerial.print(',');
   UnoSerial.print(tilt);   UnoSerial.print(',');
   UnoSerial.print(pump ? 1 : 0); UnoSerial.print(',');
   UnoSerial.print(burst_ms);
   UnoSerial.print('\n');
-
   lastPan = pan; lastTilt = tilt; lastPump = pump;
   Serial.printf("[UNO] -> %d,%d,%d,%d\n", pan, tilt, pump ? 1 : 0, burst_ms);
 }
@@ -113,14 +141,13 @@ bool connectWiFi() {
 /* ================= HTTP HANDLERS ================= */
 // GET /status
 void handleStatus() {
-  StaticJsonDocument<256> doc;
-  doc["device"] = "ESP32-CAM-2";
-  doc["ip"]     = WiFi.localIP().toString();
-  doc["pan"]    = lastPan;
-  doc["tilt"]   = lastTilt;
-  doc["pump"]   = lastPump;
-  String out;
-  serializeJson(doc, out);
+  String out = "{";
+  out += "\"device\":\"ESP32-CAM-2\",";
+  out += "\"ip\":\"" + WiFi.localIP().toString() + "\",";
+  out += "\"pan\":" + String(lastPan) + ",";
+  out += "\"tilt\":" + String(lastTilt) + ",";
+  out += "\"pump\":" + String(lastPump ? "true" : "false");
+  out += "}";
   httpServer.send(200, "application/json", out);
 }
 
@@ -131,26 +158,19 @@ void handleControl() {
     return;
   }
   String body = httpServer.arg("plain");
-  StaticJsonDocument<256> doc;
-  if (deserializeJson(doc, body)) {
-    httpServer.send(400, "text/plain", "Bad JSON");
-    return;
-  }
 
-  int  pan      = doc["pan"]      | lastPan;
-  int  tilt     = doc["tilt"]     | lastTilt;
-  bool pump     = doc["pump"]     | false;
-  int  burst_ms = doc["burst_ms"] | 0;
+  int  pan      = (int)jsonInt(body, "pan",  lastPan);
+  int  tilt     = (int)jsonInt(body, "tilt", lastTilt);
+  bool pump     = jsonBool(body, "pump", false);
+  int  burst_ms = (int)jsonInt(body, "burst_ms", 0);
 
   sendToUno(pan, tilt, pump, burst_ms);
 
-  StaticJsonDocument<128> resp;
-  resp["ok"]   = true;
-  resp["pan"]  = pan;
-  resp["tilt"] = tilt;
-  resp["pump"] = pump;
-  String out;
-  serializeJson(resp, out);
+  String out = "{\"ok\":true,";
+  out += "\"pan\":" + String(pan) + ",";
+  out += "\"tilt\":" + String(tilt) + ",";
+  out += "\"pump\":" + String(pump ? "true" : "false");
+  out += "}";
   httpServer.send(200, "application/json", out);
 }
 
@@ -165,10 +185,10 @@ void setup() {
   Serial.begin(115200);
   Serial.println("\n=== ESP32-CAM 2 (CONTROL / BRIDGE) ===");
 
-  // UART xuong UNO: chi dung chan TX (GPIO13), RX = -1 (khong dung)
+  // UART xuong UNO: chi dung chan TX (GPIO13), RX = -1
   UnoSerial.begin(UNO_BAUD, SERIAL_8N1, -1, PIN_UART_TX);
   delay(200);
-  sendToUno(PAN_HOME, TILT_HOME, false, 0);  // dua ve home luc khoi dong
+  sendToUno(PAN_HOME, TILT_HOME, false, 0);
 
   // Camera
   camera_config_t config = {};
@@ -222,10 +242,8 @@ void setup() {
   s->set_denoise(s, 1);
   Serial.println("[CAM2] Camera ready");
 
-  // WiFi
   wifiConnected = connectWiFi();
 
-  // HTTP server
   httpServer.on("/status",  HTTP_GET,  handleStatus);
   httpServer.on("/home",    HTTP_GET,  handleHome);
   httpServer.on("/control", HTTP_POST, handleControl);

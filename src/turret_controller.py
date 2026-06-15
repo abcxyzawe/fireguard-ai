@@ -13,7 +13,7 @@ Distance compensation formula (user-specified):
     θ = (1/2) * arcsin( g * R / v² )
     where:
         g = 9.81 m/s²
-        v = 67 m/s   (water nozzle initial velocity)
+        v = 37 m/s   (water jet velocity from 100 PSI, via Bernoulli)
         R = horizontal distance from nozzle to target (meters)
     θ is the EXTRA pitch angle (radians) to add upward.
 """
@@ -27,7 +27,9 @@ import requests
 # PHYSICAL CONSTANTS
 # ============================================================
 GRAVITY      = 9.81        # m/s²
-WATER_VEL    = 67.0        # m/s (initial velocity from nozzle)
+# Ap suat bom 100 PSI -> van toc tia nuoc:  v = sqrt(2*P/rho)
+#   P = 100 PSI = 689476 Pa,  rho = 1000 kg/m3  ->  v ~ 37 m/s
+WATER_VEL    = 37.0        # m/s (tu 100 PSI)
 
 
 # ============================================================
