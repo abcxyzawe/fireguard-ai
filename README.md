@@ -58,7 +58,10 @@ cd fireguard-ai
 
 ### Bước 2: Setup tự động (cài thư viện + tải model)
 
-**Windows:** double-click `setup.bat` (hoặc gõ `setup.bat`)
+**Windows — máy thường (chạy CPU):** double-click `setup.bat`
+
+**Windows — máy có GPU NVIDIA (CUDA 12.1):** double-click `setup_gpu.bat`
+→ cài torch bản CUDA để chạy nhanh trên GPU
 
 **Mac / Linux / Raspberry Pi:**
 ```bash
@@ -66,6 +69,8 @@ bash setup.sh
 ```
 
 → Script tự `pip install` + tải `models/best.pt` từ GitHub Release. Khỏi cài tay.
+
+> Kiểm tra GPU có chạy không: `python -c "import torch; print(torch.cuda.is_available())"` → in `True` là dùng GPU.
 
 ### Bước 3: Chạy server
 
